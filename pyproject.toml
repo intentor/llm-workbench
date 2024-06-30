@@ -1,0 +1,20 @@
+[project]
+name = "llmWorkbench"
+version = "0.1.0"
+authors = [{ name = "André 'Intentor' Martins" }]
+description = "A RAG-enabled workbench to index files and chat with an LLM."
+keywords = ["ai", "rag", "llm", "chat"]
+readme = "README.md"
+classifiers = ["Programming Language :: Python :: 3"]
+dependencies = [
+    "streamlit",
+    "huggingface-hub",
+    "sentence-transformers",
+    "chromadb",
+    "docx2txt",
+    "openpyxl",
+    "pdf2txt",
+]
+
+[project.optional-dependencies]
+test = ["pytest"]
