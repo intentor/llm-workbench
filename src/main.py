@@ -14,6 +14,7 @@ from config import (
     OLLAMA_HOST,
     OLLAMA_REQUEST_TIMEOUT
 )
+from llm.operator import LlmOperator
 from ui.component.base import OperationMode, OperationModeManager, UiComponent
 from ui.component.chat import ChatComponent
 from ui.component.context import ContextCompoonent
@@ -22,10 +23,11 @@ from ui.component.replay import ReplayComponent
 
 logger = getLogger()
 
+operator = LlmOperator()
 mode_manager = OperationModeManager(OperationMode.CHAT)
-chat = ChatComponent(mode_manager)
-context = ContextCompoonent(mode_manager)
-replay = ReplayComponent(mode_manager, chat)
+chat = ChatComponent(mode_manager, operator)
+context = ContextCompoonent(mode_manager, operator)
+replay = ReplayComponent(mode_manager, operator, chat)
 
 modes: Dict[OperationMode, UiComponent] = {
     OperationMode.CHAT: chat,

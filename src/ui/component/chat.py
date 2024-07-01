@@ -6,12 +6,12 @@ Sessions:
 """
 
 import gc
-import time
 from logging import getLogger
 from typing import Dict, List
 
 import streamlit as st
 
+from llm.operator import LlmOperator
 from ui.component.base import OperationModeManager, UiComponent
 
 ROLE_BOT = 'assistant'
@@ -23,8 +23,11 @@ logger = getLogger()
 class ChatComponent(UiComponent):
     """Manages chat messages."""
 
-    def __init__(self, mode_manager: OperationModeManager):
-        super().__init__(mode_manager)
+    def __init__(
+            self,
+            mode_manager: OperationModeManager,
+            operator: LlmOperator):
+        super().__init__(mode_manager, operator)
         if 'messages' not in st.session_state:
             self.clear_history()
         if 'replay' not in st.session_state:
@@ -109,8 +112,7 @@ class ChatComponent(UiComponent):
         self._save_message(ROLE_USER, prompt)
 
         with st.spinner("Thinking..."):
-            time.sleep(2)
-            response = f"Response: {prompt}"
+            response = self._operator.generate(prompt)
             self._render_message(ROLE_BOT, response)
             self._save_message(ROLE_BOT, response)
 

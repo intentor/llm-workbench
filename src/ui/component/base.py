@@ -6,6 +6,8 @@ from logging import getLogger
 
 import streamlit as st
 
+from llm.operator import LlmOperator
+
 logger = getLogger()
 
 
@@ -38,8 +40,13 @@ class OperationModeManager():
 class UiComponent():
     """Define a base UI component."""
 
-    def __init__(self, mode_manager: OperationModeManager):
+    def __init__(
+        self,
+        mode_manager: OperationModeManager,
+        operator: LlmOperator
+    ):
         self._mode_manager = mode_manager
+        self._operator = operator
 
     @ abstractmethod
     def render(self):

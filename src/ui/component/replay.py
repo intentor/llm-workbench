@@ -13,6 +13,7 @@ from typing import Dict, List
 
 import streamlit as st
 
+from llm.operator import LlmOperator
 from ui.component.base import OperationMode, OperationModeManager, UiComponent
 from ui.component.chat import ChatComponent, ROLE_USER
 
@@ -28,9 +29,10 @@ class ReplayComponent(UiComponent):
     def __init__(
             self,
             mode_manager: OperationModeManager,
+            operator: LlmOperator,
             chat: ChatComponent
     ):
-        super().__init__(mode_manager)
+        super().__init__(mode_manager, operator)
         self._chat = chat
 
         if 'prompts' not in st.session_state:

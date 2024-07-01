@@ -6,6 +6,7 @@ from logging import getLogger
 
 import streamlit as st
 
+from llm.operator import LlmOperator
 from ui.component.base import OperationModeManager, UiComponent
 import ui.component.icon as icon
 
@@ -15,8 +16,12 @@ logger = getLogger()
 class ContextCompoonent(UiComponent):
     """Manages context UI operations."""
 
-    def __init__(self, mode_manager: OperationModeManager):
-        super().__init__(mode_manager)
+    def __init__(
+            self,
+            mode_manager: OperationModeManager,
+            operator: LlmOperator
+    ):
+        super().__init__(mode_manager, operator)
         if 'files' not in st.session_state:
             st.session_state.files = []
 
@@ -46,8 +51,8 @@ class ContextCompoonent(UiComponent):
                 if uploaded_files:
                     try:
                         with st.spinner('Indexing files...'):
-                            time.sleep(2)
-                            st.success('Files uploaded', icon=icon.SUCCESS)
+                            self._operator.index_files([])
+                            st.success('Files indexed', icon=icon.SUCCESS)
                             st.rerun()
                     except Exception as e:
                         tb = traceback.format_exc()
