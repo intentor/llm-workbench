@@ -1,9 +1,10 @@
 """Perform interactive operations with an LLM."""
 
-
 import time
 from typing import List
 from logging import getLogger
+
+from ollama import Client
 
 CONTEXT_KEY = '/context'
 
@@ -12,6 +13,19 @@ logger = getLogger()
 
 class LlmOperator():
     """Operates an LLM."""
+
+    def __init__(
+        self,
+            ollama_host: str = 'http://localhost:11434',
+            model_name: str = 'llama3',
+            request_timeout: int = 300.0
+    ):
+        self._llm_client = Client(
+            host=ollama_host,
+            timeout=request_timeout
+        )
+        self._model_name = model_name
+        self._request_timeout = request_timeout
 
     def index_files(self, files_path: List[str]):
         """Index files in the context.
@@ -68,4 +82,7 @@ class LlmOperator():
         """
 
         logger.info('m=generate prompt=%s', prompt)
-        return f"Response.\n{prompt}"
+        response = self._llm_client.generate(self._model_name, prompt)
+        logger.info('m=generate response=%s', response)
+
+        return response['response']

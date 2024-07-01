@@ -23,7 +23,7 @@ from ui.component.replay import ReplayComponent
 
 logger = getLogger()
 
-operator = LlmOperator()
+operator = LlmOperator(OLLAMA_HOST, MODEL_NAME, OLLAMA_REQUEST_TIMEOUT)
 mode_manager = OperationModeManager(OperationMode.CHAT)
 chat = ChatComponent(mode_manager, operator)
 context = ContextCompoonent(mode_manager, operator)
