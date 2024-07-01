@@ -45,6 +45,7 @@ def config_logger():
 
 def open_replay():
     """Start the replay mode."""
+    replay.load_prompts_from_history()
     mode_manager.set_mode(OperationMode.REPLAY)
 
 

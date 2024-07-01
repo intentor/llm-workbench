@@ -3,7 +3,7 @@
 import gc
 import time
 from logging import getLogger
-from typing import List
+from typing import Dict, List
 
 import streamlit as st
 
@@ -27,9 +27,20 @@ class ChatComponent(UiComponent):
         self._render_history()
         self._render_prompt()
 
-    def get_history(self) -> List[str]:
-        """Get chat history."""
-        return st.session_state.messages
+    def get_history(self, role: str = '') -> List[Dict[str, str]]:
+        """Get messages from the chat history.
+
+        Args:
+            - role: Role from which the messages should be retrieved.
+
+        Returns:
+            List of messages.
+        """
+        messages = st.session_state.messages
+        if role == '':
+            return messages
+        else:
+            return [msg for msg in messages if msg['role'] == role]
 
     def clear_history(self):
         """Clear all chat messages."""
@@ -54,8 +65,9 @@ class ChatComponent(UiComponent):
 
             with st.spinner("Thinking..."):
                 time.sleep(2)
-                self._render_message(ROLE_BOT, prompt)
-                self._save_message(ROLE_BOT, prompt)
+                response = f"Response: {prompt}"
+                self._render_message(ROLE_BOT, response)
+                self._save_message(ROLE_BOT, response)
 
     def _save_message(self, role: str, message: str):
         """Save a message to the session."""
