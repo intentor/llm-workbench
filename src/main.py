@@ -2,6 +2,7 @@
 """
 
 import logging
+from typing import Dict
 import uuid
 from logging import getLogger
 
@@ -13,19 +14,38 @@ from config import (
     OLLAMA_HOST,
     OLLAMA_REQUEST_TIMEOUT
 )
+from ui.component.base import OperationMode, OperationModeManager, UiComponent
 from ui.component.chat import ChatComponent
 from ui.component.context import ContextCompoonent
+from ui.component.replay import ReplayComponent
+
 
 logger = getLogger()
+
+mode_manager = OperationModeManager(OperationMode.CHAT)
+chat = ChatComponent(mode_manager)
+context = ContextCompoonent(mode_manager)
+replay = ReplayComponent(mode_manager, chat)
+
+modes: Dict[OperationMode, UiComponent] = {
+    OperationMode.CHAT: chat,
+    OperationMode.REPLAY: replay
+}
 
 
 def config_logger():
     """Configure the logger output settings."""
-    logger.setLevel(logging.DEBUG)
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-    ch.setFormatter(logging.Formatter(LOG_FORMAT))
-    logger.addHandler(ch)
+    if len(logger.handlers) == 0:
+        logger.setLevel(logging.DEBUG)
+        ch = logging.StreamHandler()
+        ch.setLevel(logging.DEBUG)
+        ch.setFormatter(logging.Formatter(LOG_FORMAT))
+        logger.addHandler(ch)
+
+
+def open_replay():
+    """Start the replay mode."""
+    mode_manager.set_mode(OperationMode.REPLAY)
 
 
 # Initial setup.
@@ -33,14 +53,13 @@ if 'id' not in st.session_state:
     config_logger()
     st.session_state.id = str(uuid.uuid4())
 
-chat = ChatComponent()
-context = ContextCompoonent()
-
 with st.sidebar:
-    context.render_context()
+    context.render()
     st.caption(f"Session {st.session_state.id}")
 
-col_header, col_buttons = st.columns([6, 1], vertical_alignment='bottom')
+col_header, col_button1, col_button2 = st.columns(
+    [6, 1, 1], vertical_alignment='bottom')
+
 with col_header:
     st.header(
         'LLM Workbench',
@@ -50,8 +69,19 @@ with col_header:
 - Use `Ctrl + ENTER` for new line
               """
     )
-with col_buttons:
-    st.button('Clear', on_click=chat.clear_history)
 
-chat.render_history()
-chat.render_prompt()
+with col_button1:
+    st.button(
+        'Replay',
+        help='Perform running of a set of user prompts from history or a file.',
+        on_click=open_replay
+    )
+
+with col_button2:
+    st.button(
+        'Clear',
+        help='Clean the chat history.',
+        on_click=chat.clear_history
+    )
+
+modes[mode_manager.get_mode()].render()

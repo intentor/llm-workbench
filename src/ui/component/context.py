@@ -1,4 +1,4 @@
-"""Context UI module."""
+"""Context management components module."""
 
 import time
 import traceback
@@ -6,28 +6,29 @@ from logging import getLogger
 
 import streamlit as st
 
+from ui.component.base import OperationModeManager, UiComponent
 import ui.component.icon as icon
 
 logger = getLogger()
 
 
-class ContextCompoonent():
+class ContextCompoonent(UiComponent):
     """Manages context UI operations."""
 
-    def __init__(self):
+    def __init__(self, mode_manager: OperationModeManager):
+        super().__init__(mode_manager)
         if 'files' not in st.session_state:
             st.session_state.files = []
 
-    def render_context(self):
-        """Render the context area."""
-        st.subheader('Context management', divider='orange')
+    def render(self):
+        st.header('Context management', divider='orange')
 
         if not self._has_files():
-            self.render_upload_context()
+            self._render_upload_context()
         else:
-            self.render_list_context()
+            self._render_list_context()
 
-    def render_upload_context(self):
+    def _render_upload_context(self):
         """Render the upload components for the context module."""
         st.info(
             'To use context data on prompts, you have to upload files '
@@ -54,7 +55,7 @@ class ContextCompoonent():
                         st.error(f"Error: {e}")
                         st.stop()
 
-    def render_list_context(self):
+    def _render_list_context(self):
         """Render the listing of components for the context module."""
         with st.container(border=True):
             st.write(f"Indexed files ( {len(st.session_state.files)})")
