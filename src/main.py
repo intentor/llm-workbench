@@ -85,4 +85,6 @@ with col_button2:
         on_click=chat.clear_history
     )
 
-modes[mode_manager.get_mode()].render()
+current_mode = mode_manager.get_mode()
+logger.info('m=render mode=%s', current_mode)
+modes[current_mode].render()

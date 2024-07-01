@@ -1,4 +1,9 @@
-"""Chat management components module."""
+"""Chat management components module.
+
+Sessions:
+    - messages: Chat message history. 
+    - replay: User prompts to replay.
+"""
 
 import gc
 import time
@@ -22,10 +27,25 @@ class ChatComponent(UiComponent):
         super().__init__(mode_manager)
         if 'messages' not in st.session_state:
             self.clear_history()
+        if 'replay' not in st.session_state:
+            self._reset_replay()
 
     def render(self):
         self._render_history()
-        self._render_prompt()
+
+        if self._has_replay():
+            self._render_replay()
+        else:
+            self._render_input()
+
+    def replay(self, prompts: List[str]):
+        """Replay a list of prompts.
+
+        Args:
+            - prompts: Prompts to be sent to the LLM.
+        """
+        self.clear_history()
+        st.session_state.replay = prompts
 
     def get_history(self, role: str = '') -> List[Dict[str, str]]:
         """Get messages from the chat history.
@@ -47,27 +67,52 @@ class ChatComponent(UiComponent):
         st.session_state.messages = []
         gc.collect()
 
+    def _reset_replay(self):
+        """Reset replay data."""
+        st.session_state.replay = []
+
+    def _has_replay(self) -> bool:
+        """Get whether there are replay data."""
+        return len(st.session_state.replay) > 0
+
     def _render_message(self, role: str, message: str):
         """Render a message in the chat area, also saving it to the session."""
         with st.chat_message(role):
-            st.markdown(message)
+            # The replacement is to ensure all \n are treated as new lines.
+            st.markdown(message.replace('\n', '  \n'))
 
     def _render_history(self):
         """Render all messages in the history."""
         for message in st.session_state.messages:
             self._render_message(message['role'], message['content'])
 
-    def _render_prompt(self):
-        """Render the chat prompt."""
-        if prompt := st.chat_input('Prompt to the LLM '):
-            self._render_message(ROLE_USER, prompt)
-            self._save_message(ROLE_USER, prompt)
+    def _render_replay(self):
+        """Perform the replay of messages."""
+        for prompt in st.session_state.replay:
+            self._render_send_prompt(prompt)
 
-            with st.spinner("Thinking..."):
-                time.sleep(2)
-                response = f"Response: {prompt}"
-                self._render_message(ROLE_BOT, response)
-                self._save_message(ROLE_BOT, response)
+        self._reset_replay()
+        st.rerun()
+
+    def _render_input(self):
+        """Render the input of chat prompts."""
+        if prompt := st.chat_input('Prompt to the LLM '):
+            self._render_send_prompt(prompt)
+
+    def _render_send_prompt(self, prompt: str):
+        """Render and perform the sending of the prompt to the LLM.
+
+        Args:
+            - prompt: Prompt to be sent.
+        """
+        self._render_message(ROLE_USER, prompt)
+        self._save_message(ROLE_USER, prompt)
+
+        with st.spinner("Thinking..."):
+            time.sleep(2)
+            response = f"Response: {prompt}"
+            self._render_message(ROLE_BOT, response)
+            self._save_message(ROLE_BOT, response)
 
     def _save_message(self, role: str, message: str):
         """Save a message to the session."""

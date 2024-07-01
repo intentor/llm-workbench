@@ -1,16 +1,23 @@
-"""Replay management components module."""
+"""Replay management components module.
 
-from typing import Dict, List
+Sessions:
+    - prompts: List of prompts to replay.
+    - uploader_key: Key for the uploader component. This is a hack to allow 
+        the file uploader to reset after being loaded.
+"""
+
 import uuid
 from io import StringIO
 from logging import getLogger
+from typing import Dict, List
 
 import streamlit as st
 
 from ui.component.base import OperationMode, OperationModeManager, UiComponent
 from ui.component.chat import ChatComponent, ROLE_USER
 
-PROMPT_DIVIDER = '{{PROMPT}}'
+PROMPT_DIVIDER_KEY = '{{PROMPT}}'
+PROMPT_DIVIDER = f"{PROMPT_DIVIDER_KEY}\n"
 
 logger = getLogger()
 
@@ -42,8 +49,7 @@ class ReplayComponent(UiComponent):
         Args:
             - messages: List of messages to load.
         """
-        divider = f"{PROMPT_DIVIDER}\n"
-        prompts = divider + f"\n\n{divider}".join(messages)
+        prompts = PROMPT_DIVIDER + f"\n\n{PROMPT_DIVIDER}".join(messages)
         self._set_prompts(prompts)
 
         logger.info('m=messages from=list size=%d', len(messages))
@@ -52,8 +58,9 @@ class ReplayComponent(UiComponent):
         with st.container(border=True):
             prompts = st.text_area(
                 'Prompts to replay',
-                value=self._get_prompts(),
+                value=self._get_prompts_as_str(),
                 height=375)
+            self._set_prompts(prompts)
 
             col1, col2, col3, col4 = st.columns(
                 [4, 0.8, 1.2, 1], vertical_alignment='center')
@@ -61,7 +68,7 @@ class ReplayComponent(UiComponent):
             with col1:
                 uploaded_file = st.file_uploader(
                     f"Load prompts file - each prompt separated by {
-                        PROMPT_DIVIDER}",
+                        PROMPT_DIVIDER_KEY}",
                     type='txt',
                     accept_multiple_files=False,
                     key=st.session_state.uploader_key)
@@ -77,9 +84,10 @@ class ReplayComponent(UiComponent):
             with col2:
                 if st.button(
                     'Run',
-                    help='Execute replay of the above prompts.'
+                    help='Execute replay of the entered prompts.'
                 ):
-                    logger.info('m=replay')
+                    prompts_to_replay = self._get_prompts_as_list()
+                    self._chat.replay(prompts_to_replay)
                     self._close()
 
             with col3:
@@ -104,10 +112,7 @@ class ReplayComponent(UiComponent):
         st.rerun()
 
     def _reset_uploader_key(self):
-        """Reset the key used in the upload component through 
-        st.session_state.upload_key. This is a hack to allow the file uploader
-        to reset after being loaded.
-        """
+        """Reset the key used in the upload component."""
         st.session_state.uploader_key = f"uploader_{str(uuid.uuid4())}"
 
     def _set_prompts(self, prompts: str):
@@ -118,10 +123,12 @@ class ReplayComponent(UiComponent):
         """
         st.session_state.prompts = prompts
 
-    def _get_prompts(self) -> str:
-        """Get saved prompts.
-
-        Returns:
-            Prompts in the session.
-        """
+    def _get_prompts_as_str(self) -> str:
+        """Get saved prompts as string."""
         return st.session_state.prompts
+
+    def _get_prompts_as_list(self) -> List[str]:
+        """Get saved prompts as list."""
+        prompts_str = self._get_prompts_as_str()
+        prompts = prompts_str.split(f"{PROMPT_DIVIDER}")
+        return [p.rstrip() for p in prompts if p != '']

@@ -2,8 +2,11 @@
 
 from abc import abstractmethod
 from enum import Enum
+from logging import getLogger
 
 import streamlit as st
+
+logger = getLogger()
 
 
 class OperationMode(Enum):
@@ -29,6 +32,7 @@ class OperationModeManager():
     def set_mode(self, mode: OperationMode):
         """Set the current operation mode."""
         st.session_state.mode = mode
+        logger.info('m=set mode=%s', mode)
 
 
 class UiComponent():
