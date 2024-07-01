@@ -1,4 +1,5 @@
 venvDir := .venv
+dataDir := .data
 modelName := contextualized_assistant_llama3
 modelFileName := contextualized_assistant.model
 cmdVenvActivate := source $(venvDir)/bin/activate
@@ -6,6 +7,10 @@ cmdAppRun := python3 -m streamlit run src/main.py
 
 # Set the default target for the makefile.
 default: run
+
+# Clean the data folder.
+clean: 
+	@if [ -d $(dataDir) ]; then rm -Rf $(dataDir); fi
 
 # Perform first time setup.
 setup: setup/model setup/env
