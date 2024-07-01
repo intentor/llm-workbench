@@ -1,10 +1,11 @@
 """Perform interactive operations with an LLM."""
 
-import time
 from typing import List
 from logging import getLogger
 
 from ollama import Client
+
+from llm.indexer import ContextIndexer
 
 CONTEXT_KEY = '/context'
 
@@ -16,10 +17,19 @@ class LlmOperator():
 
     def __init__(
         self,
+            indexer: ContextIndexer,
             ollama_host: str = 'http://localhost:11434',
             model_name: str = 'llama3',
             request_timeout: int = 300.0
     ):
+        """
+        Args:
+            - indexer: Index manager.
+            - ollama_host: ost of the Ollama server.
+            - model_name: Name of the LLM model used for generation.
+            - request_timeout: Request timeout to the Ollama server.
+        """
+        self._indexer = indexer
         self._llm_client = Client(
             host=ollama_host,
             timeout=request_timeout
@@ -33,10 +43,7 @@ class LlmOperator():
         Args:
             - files_path: Path of each file to be indexed.
         """
-
-        logger.info('m=index files=%s', files_path)
-        time.sleep(2)
-        return
+        self._indexer.index_files(files_path)
 
     def generate(self, prompt: str) -> str:
         """Generates a response.
@@ -50,26 +57,11 @@ class LlmOperator():
         Returns:
             Response from the context or LLM.
         """
-
-        time.sleep(2)
         if prompt.startswith(CONTEXT_KEY):
             actual_prompt = prompt[len(CONTEXT_KEY):]
-            return self._query(actual_prompt)
+            return self._indexer.query(actual_prompt)
         else:
             return self._generate(prompt)
-
-    def _query(self, prompt: str) -> str:
-        """Query the context.
-
-        Args:
-            - prompt: Prompt to query the context.
-
-        Returns:
-            Context found or empty string.
-        """
-
-        logger.info('m=query prompt=%s', prompt)
-        return f"Context.\n{prompt}"
 
     def _generate(self, prompt: str) -> str:
         """Generate a response from a prompt.
@@ -80,7 +72,6 @@ class LlmOperator():
         Returns:
             Response from the LLM.
         """
-
         logger.info('m=generate prompt=%s', prompt)
         response = self._llm_client.generate(self._model_name, prompt)
         logger.info('m=generate response=%s', response)

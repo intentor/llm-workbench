@@ -12,8 +12,10 @@ from config import (
     LOG_FORMAT,
     MODEL_NAME,
     OLLAMA_HOST,
-    OLLAMA_REQUEST_TIMEOUT
+    OLLAMA_REQUEST_TIMEOUT,
+    VECTOR_DB_PATH
 )
+from llm.indexer import ContextIndexer
 from llm.operator import LlmOperator
 from ui.component.base import OperationMode, OperationModeManager, UiComponent
 from ui.component.chat import ChatComponent
@@ -23,7 +25,13 @@ from ui.component.replay import ReplayComponent
 
 logger = getLogger()
 
-operator = LlmOperator(OLLAMA_HOST, MODEL_NAME, OLLAMA_REQUEST_TIMEOUT)
+indexer = ContextIndexer(VECTOR_DB_PATH)
+operator = LlmOperator(
+    indexer,
+    OLLAMA_HOST,
+    MODEL_NAME,
+    OLLAMA_REQUEST_TIMEOUT
+)
 mode_manager = OperationModeManager(OperationMode.CHAT)
 chat = ChatComponent(mode_manager, operator)
 context = ContextCompoonent(mode_manager, operator)
