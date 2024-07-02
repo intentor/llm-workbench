@@ -78,9 +78,10 @@ class ContextIndexer():
         )
 
         context = ''
-        for document in results['documents']:
-            chunks = '\n\n'.join(document)
-            context += chunks
+        for idx_doc, document in enumerate(results['documents']):
+            for idx_chunk, chunk in enumerate(document):
+                chunk_id = results['ids'][idx_doc][idx_chunk]
+                context += f"<< Context {chunk_id} >>\n{chunk}\n\n"
 
         return context
 
@@ -172,7 +173,7 @@ class ContextIndexer():
             page = chunk.metadata['page_label']
             chunk_index = index
 
-            chunk_id = f"{file_name}:{page}-{chunk_index}"
+            chunk_id = f"{file_name}:{page}:{chunk_index}"
             document = chunk.get_content()
             embedding = self._get_embeddings(document)
             metadata = {
