@@ -13,7 +13,6 @@ dependencies = [
     "llama-index",
     "docx2txt",
     "openpyxl",
-    "pdf2txt",
 ]
 
 [project.optional-dependencies]
