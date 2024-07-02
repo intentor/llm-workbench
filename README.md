@@ -40,3 +40,7 @@ In the page, you can:
 4. Replay a set of user prompts, either from the current chat history or a text file.
 
 All prompts and responses are displayed in the chat container in the page.
+
+## Known issues
+
+1. The buttons in the screen are not always disabled during operations. Please be aware that clicking on different buttons during actions may lead to unintended consequences.
