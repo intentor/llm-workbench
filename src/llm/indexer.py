@@ -170,15 +170,13 @@ class ContextIndexer():
 
         for index, chunk in enumerate(chunks):
             file_name = chunk.metadata['file_name']
-            page = chunk.metadata['page_label']
             chunk_index = index
 
-            chunk_id = f"{file_name}:{page}:{chunk_index}"
+            chunk_id = f"{file_name}:{chunk_index}"
             document = chunk.get_content()
             embedding = self._get_embeddings(document)
             metadata = {
                 'file-name': file_name,
-                'page': page,
                 'chunk-index': chunk_index
             }
 
