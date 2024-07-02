@@ -8,7 +8,6 @@ Sessions:
 import os
 import traceback
 from logging import getLogger
-from typing import List
 
 import streamlit as st
 from streamlit.runtime.uploaded_file_manager import UploadedFile
@@ -73,7 +72,7 @@ class ContextCompoonent(UiComponent):
     def _save_files(
             self,
             files: list[UploadedFile]
-    ) -> List[str]:
+    ) -> list[str]:
         """Save a list of files in the disk.
 
         Args:
@@ -83,7 +82,7 @@ class ContextCompoonent(UiComponent):
         Returns:
             Path of the uploaded files.
         """
-        files_info: List[str] = []
+        files_info: list[str] = []
         session_dir = os.path.join(SESSION_PATH, st.session_state.id, 'files')
         os.makedirs(session_dir, exist_ok=True)
         for file_to_save in files:

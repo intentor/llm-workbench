@@ -2,7 +2,6 @@
 """
 
 import logging
-from typing import Dict
 import uuid
 from logging import getLogger
 
@@ -58,7 +57,7 @@ chat = ChatComponent(mode_manager, operator)
 context = ContextCompoonent(mode_manager, operator)
 replay = ReplayComponent(mode_manager, operator, chat)
 
-modes: Dict[OperationMode, UiComponent] = {
+modes: dict[OperationMode, UiComponent] = {
     OperationMode.CHAT: chat,
     OperationMode.REPLAY: replay
 }

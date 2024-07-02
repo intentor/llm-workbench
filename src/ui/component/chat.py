@@ -7,14 +7,13 @@ Sessions:
 
 import gc
 from logging import getLogger
-from typing import Dict, List
 
 import streamlit as st
 
 from llm.operator import LlmOperator
 from ui.component.base import OperationModeManager, UiComponent
 
-CHAT_CSS = custom_css = """
+CHAT_CSS = """
 <style>
     .st-emotion-cache-183lzff {
         white-space: pre-wrap !important;
@@ -51,7 +50,7 @@ class ChatComponent(UiComponent):
         else:
             self._render_input()
 
-    def replay(self, prompts: List[str]):
+    def replay(self, prompts: list[str]):
         """Replay a list of prompts.
 
         Args:
@@ -60,7 +59,7 @@ class ChatComponent(UiComponent):
         self.clear_history()
         st.session_state.replay = prompts
 
-    def get_history(self, role: str = '') -> List[Dict[str, str]]:
+    def get_history(self, role: str = '') -> list[dict[str, str]]:
         """Get messages from the chat history.
 
         Args:

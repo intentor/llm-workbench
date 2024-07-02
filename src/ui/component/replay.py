@@ -9,7 +9,6 @@ Sessions:
 import uuid
 from io import StringIO
 from logging import getLogger
-from typing import Dict, List
 
 import streamlit as st
 
@@ -41,11 +40,11 @@ class ReplayComponent(UiComponent):
 
     def load_prompts_from_history(self):
         """Load prompts from chat history."""
-        history: List[Dict[str, str]] = self._chat.get_history(ROLE_USER)
-        messages: List[str] = [msg['content'] for msg in history]
+        history: list[dict[str, str]] = self._chat.get_history(ROLE_USER)
+        messages: list[str] = [msg['content'] for msg in history]
         self.load_prompts_from_list(messages)
 
-    def load_prompts_from_list(self, messages: List[Dict[str, str]]):
+    def load_prompts_from_list(self, messages: list[dict[str, str]]):
         """Load prompts from a list of messages.
 
         Args:
@@ -129,7 +128,7 @@ class ReplayComponent(UiComponent):
         """Get saved prompts as string."""
         return st.session_state.prompts
 
-    def _get_prompts_as_list(self) -> List[str]:
+    def _get_prompts_as_list(self) -> list[str]:
         """Get saved prompts as list."""
         prompts_str = self._get_prompts_as_str()
         prompts = prompts_str.split(f"{PROMPT_DIVIDER}")
