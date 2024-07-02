@@ -16,6 +16,7 @@ from ui.component.base import OperationModeManager, UiComponent
 
 ROLE_BOT = 'assistant'
 ROLE_USER = 'user'
+PREVIOUS_RESPONSE_KEY = '{previous_response}'
 
 logger = getLogger()
 
@@ -108,11 +109,16 @@ class ChatComponent(UiComponent):
         Args:
             - prompt: Prompt to be sent.
         """
+        history = self.get_history(ROLE_BOT)
+        previous_response = '' if not history else history[-1]['content']
+        replaced_prompt = prompt.replace(
+            PREVIOUS_RESPONSE_KEY, previous_response)
+
         self._render_message(ROLE_USER, prompt)
         self._save_message(ROLE_USER, prompt)
 
         with st.spinner("Thinking..."):
-            response = self._operator.generate(prompt)
+            response = self._operator.generate(replaced_prompt)
             self._render_message(ROLE_BOT, response)
             self._save_message(ROLE_BOT, response)
 
