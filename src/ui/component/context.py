@@ -77,18 +77,17 @@ class ContextCompoonent(UiComponent):
                     try:
                         with st.spinner('Indexing files...'):
                             files_path = self._save_files(uploaded_files)
-                            st.session_state.files = files_path
                             self._operator.index_files(
                                 files_path,
                                 chunk_size,
                                 chunk_overlap)
+                            st.session_state.files = files_path
                             st.success('Files indexed', icon=icon.SUCCESS)
                             st.rerun()
                     except Exception as e:
                         tb = traceback.format_exc()
                         logger.error(tb)
                         st.error(f"Error: {e}")
-                        st.stop()
 
     def _save_files(
             self,

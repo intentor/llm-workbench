@@ -54,6 +54,10 @@ class ContextIndexer():
         """
 
         documents = self._load_documents(files_path)
+
+        if len(documents) == 0:
+            raise AssertionError('No documents were loaded.')
+
         chunks = self._split_documents(documents, chunk_size, chunk_overlap)
         self._save_documents(chunks)
 
