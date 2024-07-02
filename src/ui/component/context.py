@@ -56,7 +56,7 @@ class ContextCompoonent(UiComponent):
 
             chunk_size = st.number_input(
                 label='Chunk size',
-                value=512,
+                value=1024,
                 min_value=128,
                 max_value=2048,
                 step=128,
@@ -65,7 +65,7 @@ class ContextCompoonent(UiComponent):
 
             chunk_overlap = st.number_input(
                 label='Chunk overlap',
-                value=10,
+                value=20,
                 min_value=5,
                 max_value=100,
                 step=5,
