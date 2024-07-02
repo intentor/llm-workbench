@@ -37,18 +37,27 @@ class ContextIndexer():
         self._collection_name = collection_name
         self._embedding_model_name = embedding_model_name
 
-    def index_files(self, files_path: list[str]):
+    def index_files(
+        self,
+        files_path: list[str],
+        chunk_size: int = 1024,
+        chunk_overlap: int = 20
+    ):
         """Index files in the context.
 
         Args:
             - files_path: Path of each file to be indexed.
+            - chunk_size: Size when splitting documents. The smaller,
+                the more precise. More context at 
+                https://www.llamaindex.ai/blog/evaluating-the-ideal-chunk-size-for-a-rag-system-using-llamaindex-6207e5d3fec5
+            - chunk_overlap: Amount of overlap when splitting documents into chunk_size.
         """
 
         documents = self._load_documents(files_path)
-        chunks = self._split_documents(documents)
+        chunks = self._split_documents(documents, chunk_size, chunk_overlap)
         self._save_documents(chunks)
 
-    def query(self, prompt: str, top_k_results: int = 4) -> str:
+    def query(self, prompt: str, similarity_top_k: int = 4) -> str:
         """Query the context.
 
         Args:
@@ -65,7 +74,7 @@ class ContextIndexer():
         collection = self._get_or_create_collection()
         results = collection.query(
             query_embeddings=[embeddings],
-            n_results=top_k_results
+            n_results=similarity_top_k
         )
 
         context = ''
@@ -118,22 +127,32 @@ class ContextIndexer():
 
         return documents
 
-    def _split_documents(self, documents: list[Document]) -> list[BaseNode]:
+    def _split_documents(
+        self,
+        documents: list[Document],
+        chunk_size: int,
+        chunk_overlap: int
+    ) -> list[BaseNode]:
         """Split documents into chunks
 
         Args:
             - documents: Documents to be splitted.
+
+            - chunk_size: Size when splitting documents. The smaller,
+                the more precise.
+            - chunk_overlap: Amount of overlap when splitting documents into chunk_size.
 
         Returns
             Nodes of the splitted documents.
         """
 
         text_splitter = SentenceSplitter.from_defaults(
-            chunk_size=800,
-            chunk_overlap=80,
+            chunk_size=chunk_size,
+            chunk_overlap=chunk_overlap,
         )
         nodes = text_splitter.get_nodes_from_documents(documents)
-        logger.info('m=split size=%d', len(nodes))
+        logger.info('m=split size=%d overlap=%d len=%d',
+                    chunk_size, chunk_overlap, len(nodes))
 
         return nodes
 

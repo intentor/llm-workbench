@@ -31,13 +31,21 @@ class LlmOperator():
         self._ollama = ollama
         self._model_name = model_name
 
-    def index_files(self, files_path: List[str]):
+    def index_files(
+        self,
+        files_path: List[str],
+        chunk_size: int,
+        chunk_overlap: int
+    ):
         """Index files in the context.
 
         Args:
             - files_path: Path of each file to be indexed.
+            - chunk_size: Size when splitting documents. The smaller,
+                the more precise.
+            - chunk_overlap: Amount of overlap when splitting documents into chunk_size.
         """
-        self._indexer.index_files(files_path)
+        self._indexer.index_files(files_path, chunk_size, chunk_overlap)
 
     def generate(self, prompt: str) -> str:
         """Generates a response.

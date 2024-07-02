@@ -54,13 +54,34 @@ class ContextCompoonent(UiComponent):
                 type=['pdf', 'docx', 'xlsx', 'txt'],
                 accept_multiple_files=True)
 
+            chunk_size = st.number_input(
+                label='Chunk size',
+                value=512,
+                min_value=128,
+                max_value=2048,
+                step=128,
+                help='Size when splitting documents. The smaller, the more precise.'
+            )
+
+            chunk_overlap = st.number_input(
+                label='Chunk overlap',
+                value=10,
+                min_value=5,
+                max_value=100,
+                step=5,
+                help='Amount of overlap when splitting documents into chunk_size.'
+            )
+
             if st.form_submit_button('Index'):
                 if uploaded_files:
                     try:
                         with st.spinner('Indexing files...'):
                             files_path = self._save_files(uploaded_files)
                             st.session_state.files = files_path
-                            self._operator.index_files(files_path)
+                            self._operator.index_files(
+                                files_path,
+                                chunk_size,
+                                chunk_overlap)
                             st.success('Files indexed', icon=icon.SUCCESS)
                             st.rerun()
                     except Exception as e:
