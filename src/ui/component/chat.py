@@ -14,6 +14,13 @@ import streamlit as st
 from llm.operator import LlmOperator
 from ui.component.base import OperationModeManager, UiComponent
 
+CHAT_CSS = custom_css = """
+<style>
+    .st-emotion-cache-183lzff {
+        white-space: pre-wrap !important;
+    }
+</style>
+"""
 ROLE_BOT = 'assistant'
 ROLE_USER = 'user'
 PREVIOUS_RESPONSE_KEY = '{previous_response}'
@@ -36,6 +43,8 @@ class ChatComponent(UiComponent):
 
     def render(self):
         self._render_history()
+
+        st.markdown(CHAT_CSS, unsafe_allow_html=True)
 
         if self._has_replay():
             self._render_replay()
@@ -83,7 +92,7 @@ class ChatComponent(UiComponent):
         """Render a message in the chat area, also saving it to the session."""
         with st.chat_message(role):
             # The replacement is to ensure all \n are treated as new lines.
-            st.markdown(message.replace('\n', '  \n'))
+            st.text(message.replace('\n', '  \n'))
 
     def _render_history(self):
         """Render all messages in the history."""
