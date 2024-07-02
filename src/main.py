@@ -10,7 +10,8 @@ import streamlit as st
 
 from config import (
     LOG_FORMAT,
-    MODEL_NAME,
+    MODEL_EMBEDDINGS,
+    MODEL_LLM,
     OLLAMA_HOST,
     OLLAMA_REQUEST_TIMEOUT,
     VECTOR_DB_PATH
@@ -21,16 +22,36 @@ from ui.component.base import OperationMode, OperationModeManager, UiComponent
 from ui.component.chat import ChatComponent
 from ui.component.context import ContextCompoonent
 from ui.component.replay import ReplayComponent
+import ollama
 
 
 logger = getLogger()
 
-indexer = ContextIndexer(VECTOR_DB_PATH)
+# Initial setup.
+if 'id' not in st.session_state:
+    if len(logger.handlers) == 0:
+        logger.setLevel(logging.DEBUG)
+        ch = logging.StreamHandler()
+        ch.setLevel(logging.DEBUG)
+        ch.setFormatter(logging.Formatter(LOG_FORMAT))
+        logger.addHandler(ch)
+    st.session_state.id = str(uuid.uuid4())
+
+ollama = ollama.Client(
+    host=OLLAMA_HOST,
+    timeout=OLLAMA_REQUEST_TIMEOUT
+)
+indexer = ContextIndexer(
+    ollama,
+    VECTOR_DB_PATH,
+    st.session_state.id,
+    MODEL_EMBEDDINGS
+)
 operator = LlmOperator(
     indexer,
-    OLLAMA_HOST,
-    MODEL_NAME,
-    OLLAMA_REQUEST_TIMEOUT
+    ollama,
+    MODEL_LLM,
+
 )
 mode_manager = OperationModeManager(OperationMode.CHAT)
 chat = ChatComponent(mode_manager, operator)
@@ -43,26 +64,11 @@ modes: Dict[OperationMode, UiComponent] = {
 }
 
 
-def config_logger():
-    """Configure the logger output settings."""
-    if len(logger.handlers) == 0:
-        logger.setLevel(logging.DEBUG)
-        ch = logging.StreamHandler()
-        ch.setLevel(logging.DEBUG)
-        ch.setFormatter(logging.Formatter(LOG_FORMAT))
-        logger.addHandler(ch)
-
-
 def open_replay():
     """Start the replay mode."""
     replay.load_prompts_from_history()
     mode_manager.set_mode(OperationMode.REPLAY)
 
-
-# Initial setup.
-if 'id' not in st.session_state:
-    config_logger()
-    st.session_state.id = str(uuid.uuid4())
 
 with st.sidebar:
     context.render()

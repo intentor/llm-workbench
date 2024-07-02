@@ -1,6 +1,7 @@
 venvDir := .venv
 dataDir := .data
-modelName := contextualized_assistant_llama3
+embeddingModelName := nomic-embed-text
+llmModelName := contextualized_assistant_llama3
 modelFileName := contextualized_assistant.model
 cmdVenvActivate := source $(venvDir)/bin/activate
 cmdAppRun := python3 -m streamlit run src/main.py
@@ -17,8 +18,11 @@ setup: setup/model setup/env
 
 # Configure the model used by the application.
 setup/model:
-	-ollama rm $(modelName)
-	ollama create $(modelName) -f $(modelFileName)
+	-ollama rm $(embeddingModelName)
+	ollama pull $(embeddingModelName)
+
+	-ollama rm $(llmModelName)
+	ollama create $(llmModelName) -f $(modelFileName)
 
 # Configure the virtual environment and dependencies.
 setup/env:

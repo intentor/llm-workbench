@@ -18,24 +18,18 @@ class LlmOperator():
     def __init__(
         self,
             indexer: ContextIndexer,
-            ollama_host: str = 'http://localhost:11434',
-            model_name: str = 'llama3',
-            request_timeout: int = 300.0
+            ollama: Client,
+            model_name: str = 'llama3'
     ):
         """
         Args:
             - indexer: Index manager.
-            - ollama_host: ost of the Ollama server.
+            - ollama: Client to access Ollama.
             - model_name: Name of the LLM model used for generation.
-            - request_timeout: Request timeout to the Ollama server.
         """
         self._indexer = indexer
-        self._llm_client = Client(
-            host=ollama_host,
-            timeout=request_timeout
-        )
+        self._ollama = ollama
         self._model_name = model_name
-        self._request_timeout = request_timeout
 
     def index_files(self, files_path: List[str]):
         """Index files in the context.
@@ -73,7 +67,7 @@ class LlmOperator():
             Response from the LLM.
         """
         logger.info('m=generate prompt=%s', prompt)
-        response = self._llm_client.generate(self._model_name, prompt)
+        response = self._ollama.generate(self._model_name, prompt)
         logger.info('m=generate response=%s', response)
 
         return response['response']

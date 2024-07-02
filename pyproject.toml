@@ -8,10 +8,9 @@ readme = "README.md"
 classifiers = ["Programming Language :: Python :: 3"]
 dependencies = [
     "streamlit",
-    "huggingface-hub",
-    "sentence-transformers",
     "ollama",
     "chromadb",
+    "llama-index",
     "docx2txt",
     "openpyxl",
     "pdf2txt",

@@ -13,8 +13,11 @@ OLLAMA_HOST: str = os.getenv('LLM_HOST', 'http://localhost:11434')
 OLLAMA_REQUEST_TIMEOUT: float = float(os.getenv('LLM_TIMEOUT', '300.0'))
 """Request timeout to the Ollama server."""
 
-MODEL_NAME: str = os.getenv('MODEL_NAME', 'contextualized_assistant_llama3')
-"""Name of the LLM model that should be used by the application."""
+MODEL_EMBEDDINGS: str = os.getenv('MODEL_EMBEDDINGS', 'nomic-embed-text')
+"""Name of the embedding model used by the application."""
+
+MODEL_LLM: str = os.getenv('MODEL_LLM', 'contextualized_assistant_llama3')
+"""Name of the LLM model used by the application."""
 
 VECTOR_DB_PATH: str = os.getenv('VECTOR_DB_PATH', './.data/vdb')
 """Path where the embeddings data will be saved."""
