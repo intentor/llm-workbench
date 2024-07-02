@@ -44,3 +44,4 @@ All prompts and responses are displayed in the chat container in the page.
 ## Known issues
 
 1. The buttons in the screen are not always disabled during operations. Please be aware that clicking on different buttons during actions may lead to unintended consequences.
+2. Complex Excel/.xlsx files may not be loadable due to format incompatibility with `openpyxl`.
