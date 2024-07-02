@@ -32,8 +32,10 @@ A chat page to load context files and interact with the LLM will open in your br
 
 In the page, you can:
 
-1. Upload context files.
+1. Upload and index context files.
+    - You can use set chunk size and overlap during uploading.
 2. Use a prompt to retrive context files by starting it with `/context`.
+    - You can use a number after `/context` to set the maximum number of context entries to return, e.g. `/context:2` will return at most 2 context entries.
 3. Use a prompt to the LLM so it can generate a response. The previous answer (which can e.g. be a context response) can be sent by adding the key `{previous_response}` into the prompt.
 4. Replay a set of user prompts, either from the current chat history or a text file.
 

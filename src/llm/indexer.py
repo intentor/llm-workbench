@@ -68,7 +68,7 @@ class ContextIndexer():
             Context found or empty string.
         """
 
-        logger.info('m=query prompt=%s', prompt)
+        logger.info('m=query top_k:%d prompt=%s', similarity_top_k, prompt)
 
         embeddings = self._get_embeddings(prompt)
         collection = self._get_or_create_collection()

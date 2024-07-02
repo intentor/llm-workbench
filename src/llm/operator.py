@@ -1,5 +1,6 @@
 """Perform interactive operations with an LLM."""
 
+import re
 from typing import List
 from logging import getLogger
 
@@ -7,7 +8,8 @@ from ollama import Client
 
 from llm.indexer import ContextIndexer
 
-CONTEXT_KEY = '/context'
+CONTEXT_PATTERN = r"(?P<get_context>/context(\:(?P<context_size>\d+))?\s)?(?P<prompt>.*)"
+DEFAULT_SIMILARITY_TOP_K = 4
 
 logger = getLogger()
 
@@ -30,6 +32,7 @@ class LlmOperator():
         self._indexer = indexer
         self._ollama = ollama
         self._model_name = model_name
+        self._context_regex = re.compile(CONTEXT_PATTERN, re.DOTALL)
 
     def index_files(
         self,
@@ -59,9 +62,17 @@ class LlmOperator():
         Returns:
             Response from the context or LLM.
         """
-        if prompt.startswith(CONTEXT_KEY):
-            actual_prompt = prompt[len(CONTEXT_KEY):]
-            return self._indexer.query(actual_prompt)
+
+        match = self._context_regex.match(prompt)
+        query_context = True if match.group(
+            'get_context') is not None else False
+
+        if query_context:
+            actual_prompt = match.group('prompt')
+            context_size = match.group('context_size')
+            similarity_top_k = DEFAULT_SIMILARITY_TOP_K if context_size is None else int(
+                context_size)
+            return self._indexer.query(actual_prompt, similarity_top_k)
         else:
             return self._generate(prompt)
 

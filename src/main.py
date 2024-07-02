@@ -6,6 +6,7 @@ import uuid
 from logging import getLogger
 
 import streamlit as st
+import ollama
 
 from config import (
     LOG_FORMAT,
@@ -21,8 +22,6 @@ from ui.component.base import OperationMode, OperationModeManager, UiComponent
 from ui.component.chat import ChatComponent
 from ui.component.context import ContextCompoonent
 from ui.component.replay import ReplayComponent
-import ollama
-
 
 logger = getLogger()
 
@@ -80,7 +79,8 @@ with col_header:
     st.header(
         'LLM Workbench',
         help="""
-- Use `/context` to query context
+- Use `/context` to query context returning up to 4 entries.
+- Use `/context:<number>` to query context specifying the number of entries to return (e.g. `/context:2` will return up to to 2 entries).
 - Add `{previous_response}` to append the previous response
 - Use `Ctrl + ENTER` for new line
               """
