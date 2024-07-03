@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 venvDir := .venv
 dataDir := .data
 embeddingModelName := nomic-embed-text
