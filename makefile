@@ -31,7 +31,7 @@ setup/env:
 		mkdir $(venvDir); \
 		python3 -m venv $(venvDir); \
     	$(cmdVenvActivate); \
-       	python3 -m pip install -e . --upgrade; \
+       	python3 -m pip install -e . 'llm-workbench[test]' --upgrade; \
     )
 
 # Update dependencies.
@@ -46,4 +46,11 @@ run:
 	@( \
     	$(cmdVenvActivate); \
 		$(cmdAppRun); \
+    )
+
+# Run tests.
+test:
+	@( \
+    	$(cmdVenvActivate); \
+		python3 -m pytest ./tests; \
     )

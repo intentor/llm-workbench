@@ -1,5 +1,5 @@
 [project]
-name = "llmWorkbench"
+name = "llm-workbench"
 version = "0.1.0"
 authors = [{ name = "André 'Intentor' Martins" }]
 description = "A RAG-enabled workbench to index files and chat with an LLM."
