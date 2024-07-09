@@ -89,7 +89,7 @@ class LlmOperator():
 class PromptProcessor():
     """Define a prompt to be sent to a LLM."""
 
-    CONTEXT_PATTERN = r"(?P<get_context>/context(\:(?P<context_size>\d+))?\s)?(?P<prompt>.*)"
+    CONTEXT_PATTERN = r"(\:(?P<label>[a-z0-9-]+)\s)?(?P<get_context>/context(\:(?P<context_size>\d+))?\s)?(?P<prompt>.*)"
     """Regex pattern for the prompt structure."""
 
     def __init__(self, text: str):
@@ -104,6 +104,11 @@ class PromptProcessor():
         """Return whether this is a prompt to query context."""
         return True if self._match.group(
             'get_context') is not None else False
+
+    def get_label(self) -> str:
+        """Return the label in the context."""
+        label = self._match.group('label')
+        return label if label is not None else ''
 
     def get_top_k(self, default_top_k: int = DEFAULT_SIMILARITY_TOP_K) -> int:
         """Return the Similarity Top-K value in the prompt."""

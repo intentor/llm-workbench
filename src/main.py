@@ -81,9 +81,11 @@ with col_header:
         help="""
 - Use `/context` to query context returning up to 4 entries.
 - Use `/context:<number>` to query context specifying the number of entries to return (e.g. `/context:2` will return up to to 2 entries).
-- Add `{previous_response}` to append the previous response
+- Start a prompt with `:<label>` to add a label, so its response can be referenced in subsequent prompts.
+- Add `{previous_response}` to append the previous response.
+- Add `{previous_response:<label>}` to append a previous labeled response.
 - Use `Ctrl + ENTER` for new line
-              """
+"""
     )
 
 with col_button1:
