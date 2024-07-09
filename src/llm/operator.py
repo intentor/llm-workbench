@@ -98,12 +98,17 @@ class PromptProcessor():
             - text: Prompt text.
         """
         regex = re.compile(self.CONTEXT_PATTERN, re.DOTALL)
+        self._original_prompt = text
         self._match = regex.match(text)
 
     def is_context_prompt(self) -> bool:
         """Return whether this is a prompt to query context."""
         return True if self._match.group(
             'get_context') is not None else False
+
+    def get_original_prompt(self) -> str:
+        """Return the original prompt value."""
+        return self._original_prompt
 
     def get_label(self) -> str:
         """Return the label in the context."""

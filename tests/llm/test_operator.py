@@ -271,6 +271,7 @@ class TestPromptProcessor():
             actual_prompt):
         prompt_processor = PromptProcessor(prompt)
 
+        assert prompt_processor.get_original_prompt() == prompt
         assert prompt_processor.get_label() == label
         assert prompt_processor.get_top_k() == top_k
         assert prompt_processor.is_context_prompt() == is_context_prompt
