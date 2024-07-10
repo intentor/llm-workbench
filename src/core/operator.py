@@ -61,7 +61,7 @@ class LlmOperator():
             Response from the context or core.
         """
 
-        prompt_processor = PromptProcessor(prompt)
+        prompt_processor = Prompt(prompt)
         actual_prompt = prompt_processor.get_prompt()
         if prompt_processor.is_context_prompt():
             return self._indexer.query(
@@ -86,7 +86,7 @@ class LlmOperator():
         return response['response']
 
 
-class PromptProcessor():
+class Prompt():
     """Define a prompt to be sent to a core."""
 
     CONTEXT_PATTERN = r"(\:(?P<label>[a-z0-9-]+)\s)?(?P<get_context>/context(\:(?P<context_size>\d+))?\s)?(?P<prompt>.*)"

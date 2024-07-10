@@ -2,10 +2,10 @@
 
 import pytest
 
-from core.operator import DEFAULT_SIMILARITY_TOP_K, PromptProcessor
+from core.operator import DEFAULT_SIMILARITY_TOP_K, Prompt
 
 
-class TestPromptProcessor():
+class TestPrompt():
     @pytest.mark.parametrize(
         'prompt,label,top_k,is_context_prompt,actual_prompt', [
             (
@@ -269,7 +269,7 @@ class TestPromptProcessor():
             top_k,
             is_context_prompt,
             actual_prompt):
-        prompt_processor = PromptProcessor(prompt)
+        prompt_processor = Prompt(prompt)
 
         assert prompt_processor.get_original_prompt() == prompt
         assert prompt_processor.get_label() == label
