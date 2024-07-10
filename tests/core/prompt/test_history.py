@@ -31,19 +31,19 @@ def test_get_last_response_has_entries(history, entry1, entry2):
     assert last_response == entry2.response
 
 
-def test_get_by_label_single_entry(history, entry1, entry2):
+def test_get_response_by_label_single_entry(history, entry1, entry2):
     history.extend([entry1, entry2])
 
-    entries = history.get_by_label(entry2.label)
+    entries = history.get_response_by_label(entry2.label)
     assert len(entries) == 1
-    assert entries[0].label == entry2.label
+    assert entries[0] == entry2.response
 
 
-def test_get_by_label_multiple_entries(history, entry1, entry2):
+def test_get_response_by_label_multiple_entries(history, entry1, entry2):
     history.extend([entry1, entry1, entry2, entry2, entry2])
 
-    entries = history.get_by_label(entry2.label)
+    entries = history.get_response_by_label(entry2.label)
     assert len(entries) == 3
-    assert entries[0].label == entry2.label
-    assert entries[1].label == entry2.label
-    assert entries[2].label == entry2.label
+    assert entries[0] == entry2.response
+    assert entries[1] == entry2.response
+    assert entries[2] == entry2.response

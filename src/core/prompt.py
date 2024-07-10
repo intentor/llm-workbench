@@ -20,7 +20,7 @@ class PromptType(Enum):
 class Prompt():
     """Define a prompt that will perform an action."""
 
-    CONTEXT_PATTERN = r"(\:(?P<label>[a-z0-9-]+)\s)?(?P<get_context>/context(\:(?P<context_size>\d+))?\s)?(?P<prompt>.*)"
+    PROMPT_PATTERN = r"(\:(?P<label>[a-z0-9-]+)\s)?(?P<get_context>/context(\:(?P<context_size>\d+))?\s)?(?P<prompt>.*)"
     """Regex pattern for the prompt structure."""
 
     def __init__(self, text: str):
@@ -28,9 +28,10 @@ class Prompt():
         Args:
             - text: Prompt text.
         """
-        regex = re.compile(self.CONTEXT_PATTERN, re.DOTALL)
+        pattern = re.compile(self.PROMPT_PATTERN, re.DOTALL)
+        self._match = pattern.match(text)
+
         self._original_prompt = text
-        self._match = regex.match(text)
         self._type = PromptType.CONTEXT if self._match.group(
             'get_context') is not None else PromptType.GENERATE
 
@@ -83,28 +84,48 @@ class PromptHistory(list[PromptHistoryEntry]):
         """Get the last response in the history."""
         return self[-1].response if self else ''
 
-    def get_by_label(self, label: str) -> list[PromptHistoryEntry]:
-        """Get prompts by label.
+    def get_response_by_label(self, label: str) -> list[str]:
+        """Get response by label.
 
         Args:
             - label: Label to look for.
+        """
+        return [entry.response for entry in self if entry.label == label]
+
+
+class PromptPatternReplacer():
+    """Replaces text on prompts based on certain patterns."""
+
+    REPLACEMENT_PATTERN = r"(\{response\:(?P<type>last|label)(\:(?P<label>[a-z0-9-]+))?\})"
+    """Regex pattern for prompt replacement."""
+
+    def __init__(self, history: PromptHistory):
+        self._history = history
+
+    def replace(self, prompt: str) -> str:
+        """Replace responses in a prompt, either with label or not.
+        If no replacement key is found, no replacement is made.
+
+        Args:
+            - prompt: Prompt in which replacements will take place.
+            - history: Prompt history to look for previous responses.
 
         Returns:
-            List of history entries with the desired label.
+            Prompt with previous response replaced.
         """
-        return [entry for entry in self if entry.label == label]
 
+        return re.sub(
+            self.REPLACEMENT_PATTERN,
+            self._evaluate_replacement,
+            prompt
+        )
 
-def replace_response(prompt: str, history: PromptHistory) -> str:
-    """Replace responses in a prompt, either with label or not.
-    If no replacement key is found, no replacement is made.
-
-    Args:
-        - prompt: Prompt in which replacements will take place.
-        - history: Prompt history to look for previous responses.
-
-    Returns:
-        Prompt with previous response replaced.
-    """
-    last_response = history.get_last_response()
-    return prompt.replace('{response:last}', last_response)
+    def _evaluate_replacement(self, match):
+        if match.group('type') == 'last':
+            return self._history.get_last_response()
+        elif match.group('type') == 'label':
+            entries: list[str] = self._history.get_response_by_label(
+                match.group('label'))
+            return '\n'.join(entries)
+        else:
+            return ''

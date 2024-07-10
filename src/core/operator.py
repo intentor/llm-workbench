@@ -5,7 +5,13 @@ from logging import getLogger
 from ollama import Client
 
 from core.indexer import ContextIndexer
-from core.prompt import Prompt, PromptHistory, PromptHistoryEntry, PromptType, replace_response
+from core.prompt import (
+    Prompt,
+    PromptHistory,
+    PromptHistoryEntry,
+    PromptPatternReplacer,
+    PromptType
+)
 
 logger = getLogger()
 
@@ -31,6 +37,7 @@ class PromptOperator():
         self._indexer = indexer
         self._ollama = ollama
         self._model_name = model_name
+        self._replacer = PromptPatternReplacer(history)
 
     def index_files(
         self,
@@ -48,31 +55,30 @@ class PromptOperator():
         """
         self._indexer.index_files(files_path, chunk_size, chunk_overlap)
 
-    def generate(self, prompt: str) -> str:
+    def generate(self, text: str) -> str:
         """Generates a response.
 
         Args:
-            - prompt: Prompt to query the context.
+            - text: Text to generate a response.
 
         Returns:
-            Response from the context or core.
+            Response from the generation.
         """
 
-        prompt_processor = Prompt(prompt)
-        prompt_text = replace_response(
-            prompt_processor.get_prompt(), self._history)
+        prompt = Prompt(text)
+        prompt_text = self._replacer.replace(prompt.get_prompt())
 
-        if prompt_processor.get_prompt_type() == PromptType.CONTEXT:
+        if prompt.get_prompt_type() == PromptType.CONTEXT:
             response = self._indexer.query(
                 prompt_text,
-                prompt_processor.get_top_k())
+                prompt.get_top_k())
         else:
             response = self._generate(prompt_text)
 
-        prompt_label = prompt_processor.get_label()
+        prompt_label = prompt.get_label()
         self._history.append(PromptHistoryEntry(
             label=prompt_label,
-            prompt=prompt,
+            prompt=text,
             response=response
         ))
 
