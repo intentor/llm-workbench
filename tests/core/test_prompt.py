@@ -1,8 +1,8 @@
-"""Tests for Operator objects."""
+"""Tests for Prompt module."""
 
 import pytest
 
-from core.operator import DEFAULT_SIMILARITY_TOP_K, Prompt
+from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt
 
 
 class TestPrompt():
