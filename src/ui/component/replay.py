@@ -12,7 +12,6 @@ from logging import getLogger
 
 import streamlit as st
 
-from core.operator import PromptOperator
 from core.prompt import PromptHistory
 from ui.component.base import OperationMode, OperationModeManager, UiComponent
 from ui.component.chat import ChatComponent
@@ -29,11 +28,10 @@ class ReplayComponent(UiComponent):
     def __init__(
             self,
             mode_manager: OperationModeManager,
-            operator: PromptOperator,
             history: PromptHistory,
             chat: ChatComponent
     ):
-        super().__init__(mode_manager, operator)
+        super().__init__(mode_manager)
         self._history = history
         self._chat = chat
 
@@ -103,28 +101,19 @@ class ReplayComponent(UiComponent):
                     self._close()
 
     def _close(self):
-        """Close the replay mode."""
         self._mode_manager.set_mode(OperationMode.CHAT)
         st.rerun()
 
     def _reset_uploader_key(self):
-        """Reset the key used in the upload component."""
         st.session_state.uploader_key = f"uploader_{str(uuid.uuid4())}"
 
     def _set_prompts(self, prompts: str):
-        """Set the prompts in the session so it can be later retrieved.
-
-        Args:
-            - prompts: Prompts to be saved.
-        """
         st.session_state.prompts = prompts
 
     def _get_prompts_as_str(self) -> str:
-        """Get saved prompts as string."""
         return st.session_state.prompts
 
     def _get_prompts_as_list(self) -> list[str]:
-        """Get saved prompts as list."""
         prompts_str = self._get_prompts_as_str()
         prompts = prompts_str.split(f"{PROMPT_DIVIDER}")
         return [p.rstrip() for p in prompts if p != '']

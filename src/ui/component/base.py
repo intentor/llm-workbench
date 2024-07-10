@@ -6,8 +6,6 @@ from logging import getLogger
 
 import streamlit as st
 
-from core.operator import PromptOperator
-
 logger = getLogger()
 
 
@@ -42,13 +40,11 @@ class UiComponent():
 
     def __init__(
         self,
-        mode_manager: OperationModeManager,
-        operator: PromptOperator
+        mode_manager: OperationModeManager
     ):
         self._mode_manager = mode_manager
-        self._operator = operator
 
-    @ abstractmethod
+    @abstractmethod
     def render(self):
         """Render the component."""
         return

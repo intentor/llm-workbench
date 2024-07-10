@@ -17,8 +17,8 @@ from config import (
     VECTOR_DB_PATH
 )
 from core.indexer import ContextIndexer
-from core.operator import PromptOperator
-from core.prompt import PromptHistory
+from core.generator import ContextResponseGenerator, OllamaResponseGenerator, PromptTypeResponseGenerator, ResponseGenerator
+from core.prompt import PromptHistory, PromptType
 from ui.component.base import OperationMode, OperationModeManager, UiComponent
 from ui.component.chat import ChatComponent
 from ui.component.context import ContextCompoonent
@@ -47,26 +47,32 @@ indexer = ContextIndexer(
     st.session_state.id,
     MODEL_EMBEDDINGS
 )
-operator = PromptOperator(
-    st.session_state.history,
-    indexer,
-    ollama,
-    MODEL_LLM,
-
+generator = PromptTypeResponseGenerator(
+    {
+        PromptType.GENERATE: OllamaResponseGenerator(
+            st.session_state.history,
+            ollama,
+            MODEL_LLM
+        ),
+        PromptType.CONTEXT: ContextResponseGenerator(
+            st.session_state.history,
+            indexer
+        )
+    }
 )
+
 mode_manager = OperationModeManager(OperationMode.CHAT)
 chat = ChatComponent(
     mode_manager,
-    operator,
+    generator,
     st.session_state.history
 )
 context = ContextCompoonent(
     mode_manager,
-    operator
+    indexer
 )
 replay = ReplayComponent(
     mode_manager,
-    operator,
     st.session_state.history,
     chat
 )

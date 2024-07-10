@@ -90,11 +90,6 @@ class ContextIndexer():
         return context
 
     def _get_or_create_collection(self) -> Collection:
-        """Get or create the database collection to manage vector data.
-
-        Returns:
-            The collection.
-        """
         return self._db.create_collection(
             name=self._collection_name,
             get_or_create=True,
@@ -102,11 +97,6 @@ class ContextIndexer():
         )
 
     def _get_embeddings(self, text: str) -> Sequence[float]:
-        """Generate embeddings from a chunk of text.
-
-        Returns
-            Generate embeddings.
-        """
         response = self._ollama.embeddings(
             model=self._embedding_model_name,
             prompt=text,
@@ -114,14 +104,6 @@ class ContextIndexer():
         return response['embedding']
 
     def _load_documents(self, files_path: list[str]) -> list[Document]:
-        """Load documents from a list of file paths.
-
-        Args:
-            - files_path: Path of each file to be loaded.
-
-        Returns
-            Documents loaded.
-        """
         reader = SimpleDirectoryReader(
             input_files=files_path,
             exclude_hidden=False,
@@ -138,19 +120,6 @@ class ContextIndexer():
         chunk_size: int,
         chunk_overlap: int
     ) -> list[BaseNode]:
-        """Split documents into chunks
-
-        Args:
-            - documents: Documents to be splitted.
-
-            - chunk_size: Size when splitting documents. The smaller,
-                the more precise.
-            - chunk_overlap: Amount of overlap when splitting documents into chunk_size.
-
-        Returns
-            Nodes of the splitted documents.
-        """
-
         text_splitter = SentenceSplitter.from_defaults(
             chunk_size=chunk_size,
             chunk_overlap=chunk_overlap,
@@ -162,11 +131,6 @@ class ContextIndexer():
         return nodes
 
     def _save_documents(self, chunks: list[BaseNode]):
-        """Save documents in the database.
-
-        Args:
-            - chunks: Chunks of documents to be saved.
-        """
         ids = []
         embeddings = []
         documents = []

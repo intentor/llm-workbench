@@ -13,7 +13,7 @@ import streamlit as st
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 
 from config import SESSION_PATH
-from core.operator import PromptOperator
+from core.indexer import ContextIndexer
 from ui.component.base import OperationModeManager, UiComponent
 import ui.component.icon as icon
 
@@ -26,9 +26,10 @@ class ContextCompoonent(UiComponent):
     def __init__(
             self,
             mode_manager: OperationModeManager,
-            operator: PromptOperator
+            indexer: ContextIndexer
     ):
-        super().__init__(mode_manager, operator)
+        super().__init__(mode_manager)
+        self._indexer = indexer
         if 'files' not in st.session_state:
             st.session_state.files = []
 
@@ -41,7 +42,6 @@ class ContextCompoonent(UiComponent):
             self._render_list_context()
 
     def _render_upload_context(self):
-        """Render the upload components for the context module."""
         st.info(
             'To use context data on prompts, you have to upload files '
             'so their content can be indexed and available for querying.',
@@ -77,7 +77,7 @@ class ContextCompoonent(UiComponent):
                     try:
                         with st.spinner('Indexing files...'):
                             files_path = self._save_files(uploaded_files)
-                            self._operator.index_files(
+                            self._indexer.index_files(
                                 files_path,
                                 chunk_size,
                                 chunk_overlap)
@@ -93,15 +93,6 @@ class ContextCompoonent(UiComponent):
             self,
             files: list[UploadedFile]
     ) -> list[str]:
-        """Save a list of files in the disk.
-
-        Args:
-            files_path: Path where the files will be saved.
-            files: Files to save.
-
-        Returns:
-            Path of the uploaded files.
-        """
         files_info: list[str] = []
         session_dir = os.path.join(SESSION_PATH, st.session_state.id, 'files')
         os.makedirs(session_dir, exist_ok=True)
@@ -116,12 +107,10 @@ class ContextCompoonent(UiComponent):
         return files_info
 
     def _render_list_context(self):
-        """Render the listing of components for the context module."""
         with st.container(border=True):
             st.write(f"Indexed files ({len(st.session_state.files)})")
             for file in st.session_state.files:
                 st.caption(os.path.basename(file))
 
     def _has_files(self) -> bool:
-        """Indicates whether the session has files."""
         return len(st.session_state.files) > 0
