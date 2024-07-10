@@ -6,7 +6,7 @@ from logging import getLogger
 
 import streamlit as st
 
-from llm.operator import LlmOperator
+from core.operator import LlmOperator
 
 logger = getLogger()
 

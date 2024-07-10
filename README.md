@@ -1,6 +1,6 @@
 # LLM Workbench
 
-A RAG-enabled workbench to index files and chat with an LLM.
+A RAG-enabled workbench to index files and chat with an core.
 
 ## How it works
 

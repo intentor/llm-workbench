@@ -10,7 +10,7 @@ from logging import getLogger
 
 import streamlit as st
 
-from llm.operator import LlmOperator
+from core.operator import LlmOperator
 from ui.component.base import OperationModeManager, UiComponent
 
 CHAT_CSS = """
@@ -54,7 +54,7 @@ class ChatComponent(UiComponent):
         """Replay a list of prompts.
 
         Args:
-            - prompts: Prompts to be sent to the LLM.
+            - prompts: Prompts to be sent to the core.
         """
         self.clear_history()
         st.session_state.replay = prompts
@@ -112,7 +112,7 @@ class ChatComponent(UiComponent):
             self._render_send_prompt(prompt)
 
     def _render_send_prompt(self, prompt: str):
-        """Render and perform the sending of the prompt to the LLM.
+        """Render and perform the sending of the prompt to the core.
 
         Args:
             - prompt: Prompt to be sent.

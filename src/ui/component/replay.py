@@ -12,7 +12,7 @@ from logging import getLogger
 
 import streamlit as st
 
-from llm.operator import LlmOperator
+from core.operator import LlmOperator
 from ui.component.base import OperationMode, OperationModeManager, UiComponent
 from ui.component.chat import ChatComponent, ROLE_USER
 

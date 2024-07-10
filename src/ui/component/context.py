@@ -13,7 +13,7 @@ import streamlit as st
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 
 from config import SESSION_PATH
-from llm.operator import LlmOperator
+from core.operator import LlmOperator
 from ui.component.base import OperationModeManager, UiComponent
 import ui.component.icon as icon
 

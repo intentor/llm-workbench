@@ -2,7 +2,7 @@
 
 import pytest
 
-from llm.operator import DEFAULT_SIMILARITY_TOP_K, PromptProcessor
+from core.operator import DEFAULT_SIMILARITY_TOP_K, PromptProcessor
 
 
 class TestPromptProcessor():

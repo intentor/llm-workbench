@@ -16,8 +16,8 @@ from config import (
     OLLAMA_REQUEST_TIMEOUT,
     VECTOR_DB_PATH
 )
-from llm.indexer import ContextIndexer
-from llm.operator import LlmOperator
+from core.indexer import ContextIndexer
+from core.operator import LlmOperator
 from ui.component.base import OperationMode, OperationModeManager, UiComponent
 from ui.component.chat import ChatComponent
 from ui.component.context import ContextCompoonent

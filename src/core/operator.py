@@ -1,4 +1,4 @@
-"""Perform interactive operations with an LLM."""
+"""Perform interactive operations with an core."""
 
 import re
 from typing import List
@@ -6,7 +6,7 @@ from logging import getLogger
 
 from ollama import Client
 
-from llm.indexer import ContextIndexer
+from core.indexer import ContextIndexer
 
 DEFAULT_SIMILARITY_TOP_K = 4
 
@@ -14,7 +14,7 @@ logger = getLogger()
 
 
 class LlmOperator():
-    """Operates an LLM."""
+    """Operates an core."""
 
     def __init__(
         self,
@@ -52,13 +52,13 @@ class LlmOperator():
         """Generates a response.
         If prompt starts with /context, everything after this key will be used
         as prompt to query the context.
-        Case else, the prompt is sent to the LLM.
+        Case else, the prompt is sent to the core.
 
         Args:
             - prompt: Prompt to query the context.
 
         Returns:
-            Response from the context or LLM.
+            Response from the context or core.
         """
 
         prompt_processor = PromptProcessor(prompt)
@@ -74,10 +74,10 @@ class LlmOperator():
         """Generate a response from a prompt.
 
         Args:
-            - prompt: Prompt to be sent to the LLM.
+            - prompt: Prompt to be sent to the core.
 
         Returns:
-            Response from the LLM.
+            Response from the core.
         """
         logger.info('m=generate prompt=%s', prompt)
         response = self._ollama.generate(self._model_name, prompt)
@@ -87,7 +87,7 @@ class LlmOperator():
 
 
 class PromptProcessor():
-    """Define a prompt to be sent to a LLM."""
+    """Define a prompt to be sent to a core."""
 
     CONTEXT_PATTERN = r"(\:(?P<label>[a-z0-9-]+)\s)?(?P<get_context>/context(\:(?P<context_size>\d+))?\s)?(?P<prompt>.*)"
     """Regex pattern for the prompt structure."""
