@@ -1,11 +1,18 @@
 """Prompt management module."""
 
 import re
+from enum import Enum
 from logging import getLogger
 
 DEFAULT_SIMILARITY_TOP_K = 4
 
 logger = getLogger()
+
+
+class PromptType(Enum):
+    """Prompt type."""
+    GENERATE = 1
+    CONTEXT = 2
 
 
 class Prompt():
@@ -22,15 +29,16 @@ class Prompt():
         regex = re.compile(self.CONTEXT_PATTERN, re.DOTALL)
         self._original_prompt = text
         self._match = regex.match(text)
-
-    def is_context_prompt(self) -> bool:
-        """Return whether this is a prompt to query context."""
-        return True if self._match.group(
-            'get_context') is not None else False
+        self._type = PromptType.CONTEXT if self._match.group(
+            'get_context') is not None else PromptType.GENERATE
 
     def get_original_prompt(self) -> str:
         """Return the original prompt value."""
         return self._original_prompt
+
+    def get_prompt_type(self) -> PromptType:
+        """Return the type of the prompt."""
+        return self._type
 
     def get_label(self) -> str:
         """Return the label in the context."""
