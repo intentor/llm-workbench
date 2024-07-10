@@ -12,9 +12,10 @@ from logging import getLogger
 
 import streamlit as st
 
-from core.operator import LlmOperator
+from core.operator import PromptOperator
+from core.prompt import PromptHistory
 from ui.component.base import OperationMode, OperationModeManager, UiComponent
-from ui.component.chat import ChatComponent, ROLE_USER
+from ui.component.chat import ChatComponent
 
 PROMPT_DIVIDER_KEY = '{{PROMPT}}'
 PROMPT_DIVIDER = f"{PROMPT_DIVIDER_KEY}\n"
@@ -28,10 +29,12 @@ class ReplayComponent(UiComponent):
     def __init__(
             self,
             mode_manager: OperationModeManager,
-            operator: LlmOperator,
+            operator: PromptOperator,
+            history: PromptHistory,
             chat: ChatComponent
     ):
         super().__init__(mode_manager, operator)
+        self._history = history
         self._chat = chat
 
         if 'prompts' not in st.session_state:
@@ -40,20 +43,12 @@ class ReplayComponent(UiComponent):
 
     def load_prompts_from_history(self):
         """Load prompts from chat history."""
-        history: list[dict[str, str]] = self._chat.get_history(ROLE_USER)
-        messages: list[str] = [msg['content'] for msg in history]
-        self.load_prompts_from_list(messages)
-
-    def load_prompts_from_list(self, messages: list[dict[str, str]]):
-        """Load prompts from a list of messages.
-
-        Args:
-            - messages: List of messages to load.
-        """
-        prompts = PROMPT_DIVIDER + f"\n\n{PROMPT_DIVIDER}".join(messages)
+        prompts_in_history: list[str] = self._history.get_prompts()
+        prompts = PROMPT_DIVIDER + \
+            f"\n\n{PROMPT_DIVIDER}".join(prompts_in_history)
         self._set_prompts(prompts)
 
-        logger.info('m=messages from=list size=%d', len(messages))
+        logger.info('m=messages from=list size=%d', len(prompts))
 
     def render(self):
         with st.container(border=True):

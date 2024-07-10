@@ -4,6 +4,8 @@ import re
 from enum import Enum
 from logging import getLogger
 
+from attr import dataclass
+
 DEFAULT_SIMILARITY_TOP_K = 4
 
 logger = getLogger()
@@ -16,7 +18,7 @@ class PromptType(Enum):
 
 
 class Prompt():
-    """Define a prompt to be sent to a core."""
+    """Define a prompt that will perform an action."""
 
     CONTEXT_PATTERN = r"(\:(?P<label>[a-z0-9-]+)\s)?(?P<get_context>/context(\:(?P<context_size>\d+))?\s)?(?P<prompt>.*)"
     """Regex pattern for the prompt structure."""
@@ -54,3 +56,55 @@ class Prompt():
     def get_prompt(self) -> str:
         """Return the actual prompt text."""
         return self._match.group('prompt')
+
+
+@dataclass
+class PromptHistoryEntry():
+    """Defines an entry in the prompt history."""
+
+    label: str
+    """Label of the prompt item."""
+
+    prompt: str
+    """Prompt that performed an action."""
+
+    response: str
+    """Response from the prompt action."""
+
+
+class PromptHistory(list[PromptHistoryEntry]):
+    """Manages prompt history."""
+
+    def get_prompts(self) -> list[str]:
+        """Get all prompts in the history."""
+        return [entry.prompt for entry in self]
+
+    def get_last_response(self) -> str:
+        """Get the last response in the history."""
+        return self[-1].response if self else ''
+
+    def get_by_label(self, label: str) -> list[PromptHistoryEntry]:
+        """Get prompts by label.
+
+        Args:
+            - label: Label to look for.
+
+        Returns:
+            List of history entries with the desired label.
+        """
+        return [entry for entry in self if entry.label == label]
+
+
+def replace_response(prompt: str, history: PromptHistory) -> str:
+    """Replace responses in a prompt, either with label or not.
+    If no replacement key is found, no replacement is made.
+
+    Args:
+        - prompt: Prompt in which replacements will take place.
+        - history: Prompt history to look for previous responses.
+
+    Returns:
+        Prompt with previous response replaced.
+    """
+    last_response = history.get_last_response()
+    return prompt.replace('{response:last}', last_response)

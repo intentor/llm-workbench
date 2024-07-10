@@ -13,7 +13,7 @@ import streamlit as st
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 
 from config import SESSION_PATH
-from core.operator import LlmOperator
+from core.operator import PromptOperator
 from ui.component.base import OperationModeManager, UiComponent
 import ui.component.icon as icon
 
@@ -26,7 +26,7 @@ class ContextCompoonent(UiComponent):
     def __init__(
             self,
             mode_manager: OperationModeManager,
-            operator: LlmOperator
+            operator: PromptOperator
     ):
         super().__init__(mode_manager, operator)
         if 'files' not in st.session_state:

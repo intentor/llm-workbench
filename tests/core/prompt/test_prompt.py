@@ -1,4 +1,4 @@
-"""Tests for Prompt module."""
+"""Tests for Prompt class."""
 
 import pytest
 

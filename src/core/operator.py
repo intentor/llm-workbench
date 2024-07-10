@@ -5,26 +5,29 @@ from logging import getLogger
 from ollama import Client
 
 from core.indexer import ContextIndexer
-from core.prompt import Prompt
+from core.prompt import Prompt, PromptHistory, PromptHistoryEntry, PromptType, replace_response
 
 logger = getLogger()
 
 
-class LlmOperator():
-    """Operates an core."""
+class PromptOperator():
+    """Perform operations with prompts."""
 
     def __init__(
         self,
+            history: PromptHistory,
             indexer: ContextIndexer,
             ollama: Client,
             model_name: str = 'llama3'
     ):
         """
         Args:
+            - history: Prompt history manager.
             - indexer: Index manager.
             - ollama: Client to access Ollama.
             - model_name: Name of the LLM model used for generation.
         """
+        self._history = history
         self._indexer = indexer
         self._ollama = ollama
         self._model_name = model_name
@@ -47,9 +50,6 @@ class LlmOperator():
 
     def generate(self, prompt: str) -> str:
         """Generates a response.
-        If prompt starts with /context, everything after this key will be used
-        as prompt to query the context.
-        Case else, the prompt is sent to the core.
 
         Args:
             - prompt: Prompt to query the context.
@@ -59,13 +59,27 @@ class LlmOperator():
         """
 
         prompt_processor = Prompt(prompt)
-        actual_prompt = prompt_processor.get_prompt()
-        if prompt_processor.is_context_prompt():
-            return self._indexer.query(
-                actual_prompt,
+        prompt_text = replace_response(
+            prompt_processor.get_prompt(), self._history)
+
+        if prompt_processor.get_prompt_type() == PromptType.CONTEXT:
+            response = self._indexer.query(
+                prompt_text,
                 prompt_processor.get_top_k())
         else:
-            return self._generate(actual_prompt)
+            response = self._generate(prompt_text)
+
+        prompt_label = prompt_processor.get_label()
+        self._history.append(PromptHistoryEntry(
+            label=prompt_label,
+            prompt=prompt,
+            response=response
+        ))
+
+        logger.debug('m=generate label= prompt=%s response=%s',
+                     prompt_text, response)
+
+        return response
 
     def _generate(self, prompt: str) -> str:
         """Generate a response from a prompt.

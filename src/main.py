@@ -17,7 +17,8 @@ from config import (
     VECTOR_DB_PATH
 )
 from core.indexer import ContextIndexer
-from core.operator import LlmOperator
+from core.operator import PromptOperator
+from core.prompt import PromptHistory
 from ui.component.base import OperationMode, OperationModeManager, UiComponent
 from ui.component.chat import ChatComponent
 from ui.component.context import ContextCompoonent
@@ -34,6 +35,7 @@ if 'id' not in st.session_state:
         ch.setFormatter(logging.Formatter(LOG_FORMAT))
         logger.addHandler(ch)
     st.session_state.id = str(uuid.uuid4())
+    st.session_state.history = PromptHistory()
 
 ollama = ollama.Client(
     host=OLLAMA_HOST,
@@ -45,16 +47,29 @@ indexer = ContextIndexer(
     st.session_state.id,
     MODEL_EMBEDDINGS
 )
-operator = LlmOperator(
+operator = PromptOperator(
+    st.session_state.history,
     indexer,
     ollama,
     MODEL_LLM,
 
 )
 mode_manager = OperationModeManager(OperationMode.CHAT)
-chat = ChatComponent(mode_manager, operator)
-context = ContextCompoonent(mode_manager, operator)
-replay = ReplayComponent(mode_manager, operator, chat)
+chat = ChatComponent(
+    mode_manager,
+    operator,
+    st.session_state.history
+)
+context = ContextCompoonent(
+    mode_manager,
+    operator
+)
+replay = ReplayComponent(
+    mode_manager,
+    operator,
+    st.session_state.history,
+    chat
+)
 
 modes: dict[OperationMode, UiComponent] = {
     OperationMode.CHAT: chat,
@@ -82,8 +97,8 @@ with col_header:
 - Use `/context` to query context returning up to 4 entries.
 - Use `/context:<number>` to query context specifying the number of entries to return (e.g. `/context:2` will return up to to 2 entries).
 - Start a prompt with `:<label>` to add a label, so its response can be referenced in subsequent prompts.
-- Add `{previous_response}` to append the previous response.
-- Add `{previous_response:<label>}` to append a previous labeled response.
+- Add `{response:last}` to append the last response.
+- Add `{response:label:<label>}` to append a previous labeled response.
 - Use `Ctrl + ENTER` for new line
 """
     )

@@ -6,7 +6,7 @@ from logging import getLogger
 
 import streamlit as st
 
-from core.operator import LlmOperator
+from core.operator import PromptOperator
 
 logger = getLogger()
 
@@ -43,7 +43,7 @@ class UiComponent():
     def __init__(
         self,
         mode_manager: OperationModeManager,
-        operator: LlmOperator
+        operator: PromptOperator
     ):
         self._mode_manager = mode_manager
         self._operator = operator

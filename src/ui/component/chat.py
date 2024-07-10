@@ -10,7 +10,8 @@ from logging import getLogger
 
 import streamlit as st
 
-from core.operator import LlmOperator
+from core.operator import PromptOperator
+from core.prompt import PromptHistory
 from ui.component.base import OperationModeManager, UiComponent
 
 CHAT_CSS = """
@@ -22,7 +23,6 @@ CHAT_CSS = """
 """
 ROLE_BOT = 'assistant'
 ROLE_USER = 'user'
-PREVIOUS_RESPONSE_KEY = '{previous_response}'
 
 logger = getLogger()
 
@@ -33,10 +33,10 @@ class ChatComponent(UiComponent):
     def __init__(
             self,
             mode_manager: OperationModeManager,
-            operator: LlmOperator):
+            operator: PromptOperator,
+            history: PromptHistory):
         super().__init__(mode_manager, operator)
-        if 'messages' not in st.session_state:
-            self.clear_history()
+        self._history = history
         if 'replay' not in st.session_state:
             self._reset_replay()
 
@@ -59,24 +59,9 @@ class ChatComponent(UiComponent):
         self.clear_history()
         st.session_state.replay = prompts
 
-    def get_history(self, role: str = '') -> list[dict[str, str]]:
-        """Get messages from the chat history.
-
-        Args:
-            - role: Role from which the messages should be retrieved.
-
-        Returns:
-            List of messages.
-        """
-        messages = st.session_state.messages
-        if role == '':
-            return messages
-        else:
-            return [msg for msg in messages if msg['role'] == role]
-
     def clear_history(self):
         """Clear all chat messages."""
-        st.session_state.messages = []
+        self._history.clear()
         gc.collect()
 
     def _reset_replay(self):
@@ -95,8 +80,10 @@ class ChatComponent(UiComponent):
 
     def _render_history(self):
         """Render all messages in the history."""
-        for message in st.session_state.messages:
-            self._render_message(message['role'], message['content'])
+        for entry in self._history:
+            self._render_message(ROLE_USER, entry.prompt)
+            if entry.response:
+                self._render_message(ROLE_BOT, entry.response)
 
     def _render_replay(self):
         """Perform the replay of messages."""
@@ -117,19 +104,9 @@ class ChatComponent(UiComponent):
         Args:
             - prompt: Prompt to be sent.
         """
-        history = self.get_history(ROLE_BOT)
-        previous_response = '' if not history else history[-1]['content']
-        replaced_prompt = prompt.replace(
-            PREVIOUS_RESPONSE_KEY, previous_response)
 
         self._render_message(ROLE_USER, prompt)
-        self._save_message(ROLE_USER, prompt)
 
         with st.spinner("Thinking..."):
-            response = self._operator.generate(replaced_prompt)
+            response = self._operator.generate(prompt)
             self._render_message(ROLE_BOT, response)
-            self._save_message(ROLE_BOT, response)
-
-    def _save_message(self, role: str, message: str):
-        """Save a message to the session."""
-        st.session_state.messages.append({'role': role, 'content': message})
