@@ -39,7 +39,7 @@ setup/env:
 # Update dependencies.
 setup/update:
 	@( \
-		python3 -m venv $(venvDir); \
+		$(cmdVenvActivate); \
        	python3 -m pip install -e . --upgrade; \
     )
 
