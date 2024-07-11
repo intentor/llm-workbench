@@ -1,6 +1,6 @@
 # LLM Workbench
 
-A RAG-enabled workbench to index files and chat with an core.
+A RAG-enabled workbench to index files and chat with an LLM about their contents.
 
 ## How it works
 
@@ -28,19 +28,21 @@ make setup
 make
 ```
 
-A chat page to load context files and interact with the LLM will open in your browser.
+A page to load context files and interact with the LLM will open in your browser.
 
-In the page, you can:
+## Using the app
+
+In the app page, you can:
 
 1. Upload and index context files.
     - You can use set chunk size and overlap during uploading.
-2. Use a prompt to retrive context files by starting it with `/context`.
+2. Use a prompt to retrive context from indexed files by starting it with `/context`.
     - You can use a number after `/context` to set the maximum number of context entries to return, e.g. `/context:2` will return at most 2 context entries.
-3. Use a prompt so the LLM so it can generate a response. The last response (which can e.g. be a context response) can be sent by adding the key `{response:last}` into the prompt.
-4. Any prompt can have labels so their response can be referenced with multiple `{response:label:<label>}`.
+3. Use a prompt so the LLM can generate a response. The last response (which can e.g. be a context response) can be sent by adding the key `{response:last}` into the prompt.
+4. Add labels to prompts so their responses can be referenced with `{response:label:<label>}`.
     - Add labels by starting a prompt with `:<label>`.
-    - Labels should contain only lowercase alphanumeric characters and hyphens. Example: `:label1` and`:my-label` are a valid labels, but `:Label1` and`:My_Label` are not.
-5. Replay a set of user prompts, either from the current chat history or a text file.
+    - Labels should contain only lowercase alphanumeric characters and hyphens. E.g. `:label1` and`:my-label` are valid labels, but `:Label1` and `:My_Label` are not.
+5. Replay a set of user prompts, either from the current prompt history or a text file.
 
 All prompts and responses are displayed in the chat container in the page.
 
