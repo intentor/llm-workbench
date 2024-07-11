@@ -66,7 +66,6 @@ def test_prompt_type_generator_generate(
         generators,
         prompt_generate
 ):
-
     prompt_type_generator = PromptTypeResponseGenerator(generators)
 
     response = prompt_type_generator.generate(prompt_generate)
@@ -78,7 +77,6 @@ def test_prompt_type_generator_context(
         generators,
         prompt_context
 ):
-
     prompt_type_generator = PromptTypeResponseGenerator(generators)
 
     response = prompt_type_generator.generate(prompt_context)
