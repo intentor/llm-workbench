@@ -34,7 +34,8 @@ class ResponseGenerator():
 
 
 class HistoryAwareResponseGeneator(ResponseGenerator):
-    """Generate responses based on a prompt, with access to prompt history."""
+    """Generate responses based on a prompt, with access to prompt history and 
+    prompt pattern replacement."""
 
     def __init__(self, history: PromptHistory):
         """
@@ -42,6 +43,7 @@ class HistoryAwareResponseGeneator(ResponseGenerator):
             - history: Prompt history manager.
         """
         self._history = history
+        self._replacer = PromptPatternReplacer(history)
 
     @abstractmethod
     def generate(self, prompt: Prompt) -> str:
@@ -70,7 +72,6 @@ class ContextResponseGenerator(HistoryAwareResponseGeneator):
         """
         super().__init__(history)
         self._indexer = indexer
-        self._replacer = PromptPatternReplacer(history)
 
     def generate(self, prompt: Prompt) -> str:
         prompt_text = self._replacer.replace(prompt.get_prompt())
@@ -103,7 +104,6 @@ class OllamaResponseGenerator(HistoryAwareResponseGeneator):
         super().__init__(history)
         self._ollama = ollama
         self._model_name = model_name
-        self._replacer = PromptPatternReplacer(history)
 
     def generate(self, prompt: Prompt) -> str:
         prompt_text = self._replacer.replace(prompt.get_prompt())
