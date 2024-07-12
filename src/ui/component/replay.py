@@ -61,8 +61,7 @@ class ReplayComponent(UiComponent):
 
             with col1:
                 uploaded_file = st.file_uploader(
-                    f"Load prompts file - each prompt separated by {
-                        PROMPT_DIVIDER_KEY}",
+                    'Load prompts file',
                     type='txt',
                     accept_multiple_files=False,
                     key=st.session_state.uploader_key)
