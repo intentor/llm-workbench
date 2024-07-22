@@ -109,6 +109,7 @@ with col_header:
         help="""
 - Use `/context` to query context returning up to 4 entries.
 - Use `/context:<number>` to query context specifying the number of entries to return (e.g. `/context:2` will return up to to 2 entries).
+- Use `/context?file="<full file name with extension>"` to query context for a specific file (e.g. `/context?file="my file.pdf"` will perform the query only on chunks of `my file.pdf`).
 0 Use `/get:<url>` to retrieve the response from and endpoint (e.g. `/get:http://localhost:3000/data/1`)
 - Start a prompt with `:<label>` to add a label, so its response can be referenced in subsequent prompts.
 - Add `{response:last}` to append the last response.

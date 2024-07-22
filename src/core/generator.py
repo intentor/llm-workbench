@@ -78,7 +78,8 @@ class ContextResponseGenerator(HistoryAwareResponseGeneator):
         prompt_text = self._replacer.replace(prompt.get_prompt())
         response = self._indexer.query(
             prompt_text,
-            prompt.get_top_k())
+            prompt.get_top_k(),
+            prompt.get_file_name())
         self._append_history(prompt, response)
 
         logger.debug('m=generate type=context prompt=%s response=%s',

@@ -21,7 +21,7 @@ class PromptType(Enum):
 class Prompt():
     """Define a prompt that will perform an action."""
 
-    PROMPT_PATTERN = r"(\:(?P<label>[a-z0-9-]+)\s)?(?P<context>/context(\:(?P<context_size>\d+))?(\?file=\"(?P<filename>[\w\. ]+)\")?\s)?(?P<endpoint>\/get\:)?(?P<prompt>.*)"
+    PROMPT_PATTERN = r"(\:(?P<label>[a-z0-9-]+)\s)?(?P<context>/context(\:(?P<context_size>\d+))?(\?file=\"(?P<filename>[\w\.\- ]+)\")?\s)?(?P<endpoint>\/get\:)?(?P<prompt>.*)"
     """Regex pattern for the prompt structure."""
 
     def __init__(self, text: str):

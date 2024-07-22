@@ -17,6 +17,9 @@ logger = getLogger()
 class ContextIndexer():
     """Manages indexing files."""
 
+    METADATA_FILE_NAME = 'file-name'
+    METADATA_CHUNK_INDEX = 'chunk-index'
+
     def __init__(
         self,
         ollama: Client,
@@ -61,24 +64,35 @@ class ContextIndexer():
         chunks = self._split_documents(documents, chunk_size, chunk_overlap)
         self._save_documents(chunks)
 
-    def query(self, prompt: str, similarity_top_k: int = 4) -> str:
+    def query(
+            self,
+            prompt: str,
+            top_k: int = 4,
+            file_name: str = '') -> str:
         """Query the context.
 
         Args:
             - prompt: Prompt to query the context.
-            - top-k-results: How many chunks to return.
+            - top_k: How many chunks to return.
+            - file_name: Name of the file in the context for results filtering.
 
         Returns:
             Context found or empty string.
         """
 
-        logger.info('m=query top_k:%d prompt=%s', similarity_top_k, prompt)
+        logger.info('m=query top_k=%d file=%s prompt=%s',
+                    top_k, file_name, prompt)
+
+        where = {}
+        if file_name:
+            where[self.METADATA_FILE_NAME] = file_name
 
         embeddings = self._get_embeddings(prompt)
         collection = self._get_or_create_collection()
         results = collection.query(
             query_embeddings=[embeddings],
-            n_results=similarity_top_k
+            n_results=top_k,
+            where=where
         )
 
         context = ''
@@ -144,8 +158,8 @@ class ContextIndexer():
             document = chunk.get_content()
             embedding = self._get_embeddings(document)
             metadata = {
-                'file-name': file_name,
-                'chunk-index': chunk_index
+                self.METADATA_FILE_NAME: file_name,
+                self.METADATA_CHUNK_INDEX: chunk_index
             }
 
             ids.append(chunk_id)

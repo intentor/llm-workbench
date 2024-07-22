@@ -120,18 +120,18 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             'Prompt'
         ),
         (
-            '/context?file="my file1.pdf" Prompt',
+            '/context?file="my file-name_1.pdf" Prompt',
             '',
             DEFAULT_SIMILARITY_TOP_K,
-            'my file1.pdf',
+            'my file-name_1.pdf',
             PromptType.CONTEXT,
             'Prompt'
         ),
         (
-            '/context:1?file="my file1.pdf" Prompt',
+            '/context:1?file="my file-name_1.pdf" Prompt',
             '',
             1,
-            'my file1.pdf',
+            'my file-name_1.pdf',
             PromptType.CONTEXT,
             'Prompt'
         ),
@@ -344,18 +344,18 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             'Multline\nprompt'
         ),
         (
-            ':label /context?file="my file1.pdf" Prompt',
+            ':label /context?file="my file-name_1.pdf" Prompt',
             'label',
             DEFAULT_SIMILARITY_TOP_K,
-            'my file1.pdf',
+            'my file-name_1.pdf',
             PromptType.CONTEXT,
             'Prompt'
         ),
         (
-            ':label /context:1?file="my file1.pdf" Prompt',
+            ':label /context:1?file="my file-name_1.pdf" Prompt',
             'label',
             1,
-            'my file1.pdf',
+            'my file-name_1.pdf',
             PromptType.CONTEXT,
             'Prompt'
         ),

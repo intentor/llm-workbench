@@ -38,6 +38,7 @@ In the app page, you can:
     - You can use set chunk size and overlap during uploading.
 2. Use a prompt to retrive context from indexed files by starting it with `/context`.
     - You can use a number after `/context` to set the maximum number of context entries to return, e.g. `/context:2` will return at most 2 context entries.
+    - You can use `?file="<full file name with extension>"` to filter the context only to a specific file, e.g. `/context?file="my file.pdf"` will perform the query only on chunks of `my file.pdf`.
 3. Use a prompt to retrieve the response from an endpoint by using `/get:<url>`, e.g. `/get:http://localhost:3000/data/1`.
 4. Use a prompt so the LLM can generate a response. The last response (which can e.g. be a context response) can be sent by adding the key `{response:last}` into the prompt.
 5. Add labels to prompts so their responses can be referenced with `{response:label:<label>}`.
