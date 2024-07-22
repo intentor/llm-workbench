@@ -21,7 +21,7 @@ class PromptType(Enum):
 class Prompt():
     """Define a prompt that will perform an action."""
 
-    PROMPT_PATTERN = r"(\:(?P<label>[a-z0-9-]+)\s)?(?P<context>/context(\:(?P<context_size>\d+))?\s)?(?P<endpoint>\/get\:)?(?P<prompt>.*)"
+    PROMPT_PATTERN = r"(\:(?P<label>[a-z0-9-]+)\s)?(?P<context>/context(\:(?P<context_size>\d+))?(\?file=\"(?P<filename>[\w\. ]+)\")?\s)?(?P<endpoint>\/get\:)?(?P<prompt>.*)"
     """Regex pattern for the prompt structure."""
 
     def __init__(self, text: str):
@@ -50,7 +50,7 @@ class Prompt():
         return self._type
 
     def get_label(self) -> str:
-        """Return the label in the context."""
+        """Return the prompt label."""
         label = self._match.group('label')
         return label if label is not None else ''
 
@@ -59,6 +59,11 @@ class Prompt():
         context_size = self._match.group('context_size')
         top_k = default_top_k if context_size is None else int(context_size)
         return top_k
+
+    def get_file_name(self):
+        """Return the context file name filter."""
+        label = self._match.group('filename')
+        return label if label is not None else ''
 
     def get_prompt(self) -> str:
         """Return the actual prompt text."""

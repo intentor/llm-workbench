@@ -6,11 +6,12 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
 
 
 @pytest.mark.parametrize(
-    'prompt,label,top_k,prompt_type,actual_prompt', [
+    'prompt,label,top_k,file_name,prompt_type,actual_prompt', [
         (
             'Prompt',
             '',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.GENERATE,
             'Prompt'
         ),
@@ -18,6 +19,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             'Prompt one',
             '',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.GENERATE,
             'Prompt one'
         ),
@@ -25,6 +27,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             'Prompt one two',
             '',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.GENERATE,
             'Prompt one two'
         ),
@@ -32,6 +35,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             'Multline\nprompt',
             '',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.GENERATE,
             'Multline\nprompt'
         ),
@@ -39,6 +43,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             '/context Prompt',
             '',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.CONTEXT,
             'Prompt'
         ),
@@ -46,6 +51,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             '/context Prompt one',
             '',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.CONTEXT,
             'Prompt one'
         ),
@@ -53,6 +59,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             '/context Prompt one two',
             '',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.CONTEXT,
             'Prompt one two'
         ),
@@ -60,6 +67,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             '/context Multline\nprompt',
             '',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.CONTEXT,
             'Multline\nprompt'
         ),
@@ -67,6 +75,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             '/context:1 Prompt',
             '',
             1,
+            '',
             PromptType.CONTEXT,
             'Prompt'
         ),
@@ -74,6 +83,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             '/context:11 Prompt one',
             '',
             11,
+            '',
             PromptType.CONTEXT,
             'Prompt one'
         ),
@@ -81,6 +91,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             '/context:111 Prompt one two',
             '',
             111,
+            '',
             PromptType.CONTEXT,
             'Prompt one two'
         ),
@@ -88,13 +99,47 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             '/context:1111 Multline\nprompt',
             '',
             1111,
+            '',
             PromptType.CONTEXT,
             'Multline\nprompt'
+        ),
+        (
+            '/context?file="file.pdf" Prompt',
+            '',
+            DEFAULT_SIMILARITY_TOP_K,
+            'file.pdf',
+            PromptType.CONTEXT,
+            'Prompt'
+        ),
+        (
+            '/context:1?file="file.pdf" Prompt',
+            '',
+            1,
+            'file.pdf',
+            PromptType.CONTEXT,
+            'Prompt'
+        ),
+        (
+            '/context?file="my file1.pdf" Prompt',
+            '',
+            DEFAULT_SIMILARITY_TOP_K,
+            'my file1.pdf',
+            PromptType.CONTEXT,
+            'Prompt'
+        ),
+        (
+            '/context:1?file="my file1.pdf" Prompt',
+            '',
+            1,
+            'my file1.pdf',
+            PromptType.CONTEXT,
+            'Prompt'
         ),
         (
             '/get:http://localhost',
             '',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.ENDPOINT,
             'http://localhost'
         ),
@@ -102,6 +147,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             '/get:http://localhost:3000/data/1?query=value',
             '',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.ENDPOINT,
             'http://localhost:3000/data/1?query=value'
         ),
@@ -109,6 +155,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             ':label Prompt',
             'label',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.GENERATE,
             'Prompt'
         ),
@@ -116,6 +163,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             ':label Prompt one',
             'label',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.GENERATE,
             'Prompt one'
         ),
@@ -123,6 +171,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             ':label Prompt one two',
             'label',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.GENERATE,
             'Prompt one two'
         ),
@@ -130,6 +179,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             ':label Multline\nprompt',
             'label',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.GENERATE,
             'Multline\nprompt'
         ),
@@ -137,6 +187,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             ':label /context Prompt',
             'label',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.CONTEXT,
             'Prompt'
         ),
@@ -144,6 +195,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             ':label /context Prompt one',
             'label',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.CONTEXT,
             'Prompt one'
         ),
@@ -151,6 +203,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             ':label /context Prompt one two',
             'label',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.CONTEXT,
             'Prompt one two'
         ),
@@ -158,6 +211,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             ':label /context Multline\nprompt',
             'label',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.CONTEXT,
             'Multline\nprompt'
         ),
@@ -165,6 +219,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             ':label /context:1 Prompt',
             'label',
             1,
+            '',
             PromptType.CONTEXT,
             'Prompt'
         ),
@@ -172,6 +227,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             ':label /context:11 Prompt one',
             'label',
             11,
+            '',
             PromptType.CONTEXT,
             'Prompt one'
         ),
@@ -179,6 +235,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             ':label /context:111 Prompt one two',
             'label',
             111,
+            '',
             PromptType.CONTEXT,
             'Prompt one two'
         ),
@@ -186,6 +243,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             ':label /context:1111 Multline\nprompt',
             'label',
             1111,
+            '',
             PromptType.CONTEXT,
             'Multline\nprompt'
         ),
@@ -193,6 +251,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             ':label-two Prompt',
             'label-two',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.GENERATE,
             'Prompt'
         ),
@@ -200,6 +259,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             ':label-two Prompt one',
             'label-two',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.GENERATE,
             'Prompt one'
         ),
@@ -207,6 +267,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             ':label-two Prompt one two',
             'label-two',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.GENERATE,
             'Prompt one two'
         ),
@@ -214,6 +275,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             ':label-two Multline\nprompt',
             'label-two',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.GENERATE,
             'Multline\nprompt'
         ),
@@ -221,6 +283,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             ':label-two /context Prompt',
             'label-two',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.CONTEXT,
             'Prompt'
         ),
@@ -228,6 +291,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             ':label-two /context Prompt one',
             'label-two',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.CONTEXT,
             'Prompt one'
         ),
@@ -235,6 +299,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             ':label-two /context Prompt one two',
             'label-two',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.CONTEXT,
             'Prompt one two'
         ),
@@ -242,6 +307,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             ':label-two /context Multline\nprompt',
             'label-two',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.CONTEXT,
             'Multline\nprompt'
         ),
@@ -249,6 +315,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             ':label-two /context:1 Prompt',
             'label-two',
             1,
+            '',
             PromptType.CONTEXT,
             'Prompt'
         ),
@@ -256,6 +323,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             ':label-two /context:11 Prompt one',
             'label-two',
             11,
+            '',
             PromptType.CONTEXT,
             'Prompt one'
         ),
@@ -263,6 +331,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             ':label-two /context:111 Prompt one two',
             'label-two',
             111,
+            '',
             PromptType.CONTEXT,
             'Prompt one two'
         ),
@@ -270,13 +339,31 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             ':label-two /context:1111 Multline\nprompt',
             'label-two',
             1111,
+            '',
             PromptType.CONTEXT,
             'Multline\nprompt'
+        ),
+        (
+            ':label /context?file="my file1.pdf" Prompt',
+            'label',
+            DEFAULT_SIMILARITY_TOP_K,
+            'my file1.pdf',
+            PromptType.CONTEXT,
+            'Prompt'
+        ),
+        (
+            ':label /context:1?file="my file1.pdf" Prompt',
+            'label',
+            1,
+            'my file1.pdf',
+            PromptType.CONTEXT,
+            'Prompt'
         ),
         (
             ':label /get:http://localhost',
             'label',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.ENDPOINT,
             'http://localhost'
         ),
@@ -284,6 +371,7 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             ':label /get:http://localhost:3000/data/1?query=value',
             'label',
             DEFAULT_SIMILARITY_TOP_K,
+            '',
             PromptType.ENDPOINT,
             'http://localhost:3000/data/1?query=value'
         )
@@ -293,6 +381,7 @@ def test_prompt_processing(
         prompt,
         label,
         top_k,
+        file_name,
         prompt_type,
         actual_prompt):
     prompt_processor = Prompt(prompt)
@@ -300,5 +389,6 @@ def test_prompt_processing(
     assert prompt_processor.get_original_prompt() == prompt
     assert prompt_processor.get_label() == label
     assert prompt_processor.get_top_k() == top_k
+    assert prompt_processor.get_file_name() == file_name
     assert prompt_processor.get_prompt_type() == prompt_type
     assert prompt_processor.get_prompt() == actual_prompt
