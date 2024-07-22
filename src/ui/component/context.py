@@ -110,7 +110,7 @@ class ContextCompoonent(UiComponent):
         with st.container(border=True):
             st.write(f"Indexed files ({len(st.session_state.files)})")
             for file in st.session_state.files:
-                st.caption(os.path.basename(file))
+                st.code(os.path.basename(file))
 
     def _has_files(self) -> bool:
         return len(st.session_state.files) > 0
