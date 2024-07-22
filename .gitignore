@@ -169,3 +169,7 @@ cython_debug/
 
 # Draw.IO
 *.dtmp
+
+# Node.js files
+node_modules/
+package-lock.json

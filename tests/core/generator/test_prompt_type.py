@@ -20,6 +20,11 @@ def prompt_context() -> Prompt:
 
 
 @pytest.fixture
+def prompt_endpoint() -> Prompt:
+    return Prompt('/get:http://localhost:3000/data/1')
+
+
+@pytest.fixture
 def generator_generate():
     with patch('core.generator.ResponseGenerator') as mock_class:
         instance = mock_class.return_value
@@ -36,10 +41,19 @@ def generator_context():
 
 
 @pytest.fixture
-def generators(generator_generate, generator_context):
+def generator_endpoint():
+    with patch('core.generator.ResponseGenerator') as mock_class:
+        instance = mock_class.return_value
+        instance.generate.return_value = 'endpoint'
+        yield instance
+
+
+@pytest.fixture
+def generators(generator_generate, generator_context, generator_endpoint):
     return {
         PromptType.GENERATE: generator_generate,
-        PromptType.CONTEXT: generator_context
+        PromptType.CONTEXT: generator_context,
+        PromptType.ENDPOINT: generator_endpoint
     }
 
 
@@ -82,3 +96,14 @@ def test_prompt_type_generator_context(
     response = prompt_type_generator.generate(prompt_context)
 
     assert response == 'context'
+
+
+def test_prompt_type_generator_endpoint(
+        generators,
+        prompt_endpoint
+):
+    prompt_type_generator = PromptTypeResponseGenerator(generators)
+
+    response = prompt_type_generator.generate(prompt_endpoint)
+
+    assert response == 'endpoint'

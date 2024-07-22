@@ -15,12 +15,13 @@ class PromptType(Enum):
     """Prompt type."""
     GENERATE = 1
     CONTEXT = 2
+    ENDPOINT = 3
 
 
 class Prompt():
     """Define a prompt that will perform an action."""
 
-    PROMPT_PATTERN = r"(\:(?P<label>[a-z0-9-]+)\s)?(?P<get_context>/context(\:(?P<context_size>\d+))?\s)?(?P<prompt>.*)"
+    PROMPT_PATTERN = r"(\:(?P<label>[a-z0-9-]+)\s)?(?P<context>/context(\:(?P<context_size>\d+))?\s)?(?P<endpoint>\/get\:)?(?P<prompt>.*)"
     """Regex pattern for the prompt structure."""
 
     def __init__(self, text: str):
@@ -32,8 +33,13 @@ class Prompt():
         self._match = pattern.match(text)
 
         self._original_prompt = text
-        self._type = PromptType.CONTEXT if self._match.group(
-            'get_context') is not None else PromptType.GENERATE
+
+        if self._match.group('context') is not None:
+            self._type = PromptType.CONTEXT
+        elif self._match.group('endpoint') is not None:
+            self._type = PromptType.ENDPOINT
+        else:
+            self._type = PromptType.GENERATE
 
     def get_original_prompt(self) -> str:
         """Return the original prompt value."""

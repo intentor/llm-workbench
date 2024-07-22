@@ -36,6 +36,10 @@ setup/env:
        	python3 -m pip install -e . 'llm-workbench[test]' --upgrade; \
     )
 
+# Configure the fake JSON server for API mocking.
+setup/server:
+	npm install
+
 # Update dependencies.
 setup/update:
 	@( \
@@ -49,6 +53,10 @@ run:
     	$(cmdVenvActivate); \
 		$(cmdAppRun); \
     )
+
+# Start the JSON server for API mocking.
+run/server:
+	npx json-server db.json
 
 # Run tests.
 test:

@@ -92,6 +92,20 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             'Multline\nprompt'
         ),
         (
+            '/get:http://localhost',
+            '',
+            DEFAULT_SIMILARITY_TOP_K,
+            PromptType.ENDPOINT,
+            'http://localhost'
+        ),
+        (
+            '/get:http://localhost:3000/data/1?query=value',
+            '',
+            DEFAULT_SIMILARITY_TOP_K,
+            PromptType.ENDPOINT,
+            'http://localhost:3000/data/1?query=value'
+        ),
+        (
             ':label Prompt',
             'label',
             DEFAULT_SIMILARITY_TOP_K,
@@ -258,6 +272,20 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             1111,
             PromptType.CONTEXT,
             'Multline\nprompt'
+        ),
+        (
+            ':label /get:http://localhost',
+            'label',
+            DEFAULT_SIMILARITY_TOP_K,
+            PromptType.ENDPOINT,
+            'http://localhost'
+        ),
+        (
+            ':label /get:http://localhost:3000/data/1?query=value',
+            'label',
+            DEFAULT_SIMILARITY_TOP_K,
+            PromptType.ENDPOINT,
+            'http://localhost:3000/data/1?query=value'
         )
     ]
 )

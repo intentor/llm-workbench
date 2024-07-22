@@ -17,7 +17,12 @@ from config import (
     VECTOR_DB_PATH
 )
 from core.indexer import ContextIndexer
-from core.generator import ContextResponseGenerator, OllamaResponseGenerator, PromptTypeResponseGenerator, ResponseGenerator
+from core.generator import (
+    ContextResponseGenerator,
+    EndpointResponseGenerator,
+    OllamaResponseGenerator,
+    PromptTypeResponseGenerator
+)
 from core.prompt import PromptHistory, PromptType
 from ui.component.base import OperationMode, OperationModeManager, UiComponent
 from ui.component.chat import ChatComponent
@@ -57,7 +62,9 @@ generator = PromptTypeResponseGenerator(
         PromptType.CONTEXT: ContextResponseGenerator(
             st.session_state.history,
             indexer
-        )
+        ),
+        PromptType.ENDPOINT: EndpointResponseGenerator(
+            st.session_state.history)
     }
 )
 
@@ -102,6 +109,7 @@ with col_header:
         help="""
 - Use `/context` to query context returning up to 4 entries.
 - Use `/context:<number>` to query context specifying the number of entries to return (e.g. `/context:2` will return up to to 2 entries).
+0 Use `/get:<url>` to retrieve the response from and endpoint (e.g. `/get:http://localhost:3000/data/1`)
 - Start a prompt with `:<label>` to add a label, so its response can be referenced in subsequent prompts.
 - Add `{response:last}` to append the last response.
 - Add `{response:label:<label>}` to append a previous labeled response.

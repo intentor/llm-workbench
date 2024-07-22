@@ -2,6 +2,7 @@
 
 from abc import abstractmethod
 from logging import getLogger
+import requests
 
 from ollama import Client
 
@@ -84,6 +85,22 @@ class ContextResponseGenerator(HistoryAwareResponseGeneator):
                      prompt_text, response)
 
         return response
+
+
+class EndpointResponseGenerator(HistoryAwareResponseGeneator):
+    """Generate responses from endpoints."""
+
+    def generate(self, prompt: Prompt) -> str:
+        url = prompt.get_prompt()
+
+        response = requests.get(url, timeout=10)
+        contents = response.text
+        self._append_history(prompt, contents)
+
+        logger.debug('m=generate type=endpoint url=%s response=%s',
+                     url, response)
+
+        return contents
 
 
 class OllamaResponseGenerator(HistoryAwareResponseGeneator):
