@@ -1,4 +1,4 @@
-FROM llama3
+FROM llama3.1
 
 PARAMETER temperature 0.5
 PARAMETER top_k 30
