@@ -172,4 +172,3 @@ cython_debug/
 
 # Node.js files
 node_modules/
-package-lock.json
