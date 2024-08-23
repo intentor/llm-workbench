@@ -12,7 +12,7 @@ cmdAppRun := python3 -m streamlit run src/main.py
 default: run
 
 # Clean the data folder.
-clean: 
+clean:
 	@if [ -d $(dataDir) ]; then rm -Rf $(dataDir); fi
 
 # Perform first time setup.
@@ -44,6 +44,7 @@ setup/server:
 setup/update:
 	@( \
 		$(cmdVenvActivate); \
+		python3 -m pip install --upgrade pip; \
        	python3 -m pip install -e . --upgrade; \
     )
 
