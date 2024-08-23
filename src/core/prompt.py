@@ -7,6 +7,7 @@ from logging import getLogger
 from attr import dataclass
 
 DEFAULT_SIMILARITY_TOP_K = 4
+HISTORY_ITEM_SEPARATOR = '\n\n'
 
 logger = getLogger()
 
@@ -102,6 +103,13 @@ class PromptHistory(list[PromptHistoryEntry]):
             - label: Label to look for.
         """
         return [entry.response for entry in self if entry.label == label]
+
+    def get_as_string(self) -> str:
+        """Get the entire history as string, with messages separated by 
+        line breaks."""
+        return HISTORY_ITEM_SEPARATOR.join(
+            [item.prompt + HISTORY_ITEM_SEPARATOR + item.response for item in self]
+        )
 
 
 class PromptPatternReplacer():

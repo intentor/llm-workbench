@@ -69,5 +69,6 @@ The server will be accessible in [http://localhost:3000/](http://localhost:3000/
 ## Known issues
 
 1. The buttons in the screen are not always disabled during operations. Please be aware that clicking on different buttons during actions may lead to unintended consequences.
-2. Complex Excel/.xlsx files may not be loadable due to format incompatibility with `openpyxl`.
-3. During replay, the scrolling may not be automatic.
+2. The download of chat history may not work during first attempt.
+3. Complex Excel/.xlsx files may not be loadable due to format incompatibility with `openpyxl`.
+4. During replay, the scrolling may not be automatic.

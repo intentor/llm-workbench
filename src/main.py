@@ -100,8 +100,8 @@ with st.sidebar:
     context.render()
     st.caption(f"Session {st.session_state.id}")
 
-col_header, col_button1, col_button2 = st.columns(
-    [6, 1, 1], vertical_alignment='bottom')
+col_header, col_button1, col_button2, col_button3 = st.columns(
+    [4, 0.8, 1, 0.8], vertical_alignment='bottom')
 
 with col_header:
     st.header(
@@ -126,6 +126,15 @@ with col_button1:
     )
 
 with col_button2:
+    st.download_button(
+        label='Download',
+        help='Download the chat history as a markdown file.',
+        data=st.session_state.history.get_as_string(),
+        file_name="chat.md",
+        mime="text/markdown",
+    )
+
+with col_button3:
     st.button(
         'Clear',
         help='Clean the chat history.',

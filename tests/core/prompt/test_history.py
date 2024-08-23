@@ -47,3 +47,17 @@ def test_get_response_by_label_multiple_entries(history, entry1, entry2):
     assert entries[0] == entry2.response
     assert entries[1] == entry2.response
     assert entries[2] == entry2.response
+
+
+def test_get_history_as_string(history, entry1, entry2):
+    history.extend([entry1, entry2])
+
+    history_as_string = history.get_as_string()
+
+    assert history_as_string == f"""{entry1.prompt}
+
+{entry1.response}
+
+{entry2.prompt}
+
+{entry2.response}"""

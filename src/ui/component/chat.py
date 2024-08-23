@@ -60,6 +60,9 @@ class ChatComponent(UiComponent):
         self.clear_history()
         st.session_state.replay = prompts
 
+    def download_history(self):
+        """Download all chat messages."""
+
     def clear_history(self):
         """Clear all chat messages."""
         self._history.clear()
