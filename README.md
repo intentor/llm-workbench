@@ -30,23 +30,34 @@ make
 
 A page to load context files and interact with the LLM will open in your browser.
 
-## Using the app
+## Features
 
-In the app page, you can:
+- One-shot prompts to LLM.
+- File indexing for context querying.
+- Prompt tools to assist with prompt construction and context gathering.
+- Replaying of a set of prompts, either from the current prompt history or a text file.
+- Displaying of all prompts and responses in the chat container.
 
-1. Upload and index context files.
-    - You can use set chunk size and overlap during uploading.
-2. Use a prompt to retrive context from indexed files by starting it with `/context`.
-    - You can use a number after `/context` to set the maximum number of context entries to return, e.g. `/context:2` will return at most 2 context entries.
-    - You can use `?file="<full file name with extension>"` to filter the context only to a specific file, e.g. `/context?file="my file.pdf"` will perform the query only on chunks of `my file.pdf`.
-3. Use a prompt to retrieve the response from an endpoint by using `/get:<url>`, e.g. `/get:http://localhost:3000/data/1`.
-4. Use a prompt so the LLM can generate a response. The last response (which can e.g. be a context response) can be sent by adding the key `{response:last}` into the prompt.
-5. Add labels to prompts so their responses can be referenced with `{response:label:<label>}`.
-    - Add labels by starting a prompt with `:<label>`.
-    - Labels should contain only lowercase alphanumeric characters and hyphens. E.g. `:label1` and`:my-label` are valid labels, but `:Label1` and `:My_Label` are not.
-6. Replay a set of user prompts, either from the current prompt history or a text file.
+## Prompt tools
 
-All prompts and responses are displayed in the chat container in the page.
+Tools are used directly in the chat message input box.
+
+| Tool                                        | Usage                             |
+| ------------------------------------------- | --------------------------------- |
+| `:<label>`                                  | Add a label to a prompt for later reference. Labels should contain only lowercase alphanumeric characters and hyphens. |
+| `{response:last}`                           | Replaced by the last response in the chat history. |
+| `{response:label:<label>}`                  | Replaced by the labeled response in the chat history. |
+| `/context`                                  | Query chunks from uploaded files. |
+| `/context:<number>`                         | Set the number of chunks to return. |
+| `/context?file="<file name with extension>` | Query chunks only from the specified file. |
+| `/get:<url>`                                | Perform a `GET` to an endpoint URL. |
+| `/echo`                                     | Echo the prompt without sending it to the LLM. Can have replacements `{response*}` can be used for replacements. |
+
+## Prompt construction
+
+```text
+:<label> /<tool> <prompt text, can contain {response:*} for replacement>
+```
 
 ## API mocking
 

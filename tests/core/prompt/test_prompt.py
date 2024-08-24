@@ -374,6 +374,22 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             '',
             PromptType.ENDPOINT,
             'http://localhost:3000/data/1?query=value'
+        ),
+        (
+            '/echo Prompt',
+            '',
+            DEFAULT_SIMILARITY_TOP_K,
+            '',
+            PromptType.ECHO,
+            'Prompt'
+        ),
+        (
+            ':label /echo Prompt',
+            'label',
+            DEFAULT_SIMILARITY_TOP_K,
+            '',
+            PromptType.ECHO,
+            'Prompt'
         )
     ]
 )

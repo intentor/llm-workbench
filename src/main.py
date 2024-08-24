@@ -19,6 +19,7 @@ from config import (
 from core.indexer import ContextIndexer
 from core.generator import (
     ContextResponseGenerator,
+    EchoResponseGenerator,
     EndpointResponseGenerator,
     OllamaResponseGenerator,
     PromptTypeResponseGenerator
@@ -64,7 +65,11 @@ generator = PromptTypeResponseGenerator(
             indexer
         ),
         PromptType.ENDPOINT: EndpointResponseGenerator(
-            st.session_state.history)
+            st.session_state.history
+        ),
+        PromptType.ECHO: EchoResponseGenerator(
+            st.session_state.history
+        )
     }
 )
 

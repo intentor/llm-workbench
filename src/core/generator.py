@@ -104,6 +104,17 @@ class EndpointResponseGenerator(HistoryAwareResponseGeneator):
         return contents
 
 
+class EchoResponseGenerator(HistoryAwareResponseGeneator):
+    """Echo the prompt."""
+
+    def generate(self, prompt: Prompt) -> str:
+        response = self._replacer.replace(prompt.get_prompt())
+
+        logger.debug('m=generate type=echo response=%s', response)
+
+        return response
+
+
 class OllamaResponseGenerator(HistoryAwareResponseGeneator):
     """Generate responses from an LLM using Ollama."""
 
