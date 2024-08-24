@@ -135,7 +135,6 @@ Prompt to perform an action
 {{response:label:{entry1.label}}}
 ---
 {{response:label:{entry2.label}}}
----
 {{response:last}}
 -------------------
 Rest of the prompt
@@ -147,7 +146,6 @@ Prompt to perform an action
 {entry1.response}
 ---
 {entry2.response}
----
 {entry2.response}
 -------------------
 Rest of the prompt
