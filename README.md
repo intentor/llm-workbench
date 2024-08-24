@@ -37,6 +37,7 @@ A page to load context files and interact with the LLM will open in your browser
 - Prompt tools to assist with prompt construction and context gathering.
 - Replaying of a set of prompts, either from the current prompt history or a text file.
 - Displaying of all prompts and responses in the chat container.
+- Download of all or only the last chat messages in a `chat.txt` text file.
 
 ## Prompt tools
 
