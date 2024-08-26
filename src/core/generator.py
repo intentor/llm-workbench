@@ -109,6 +109,7 @@ class EchoResponseGenerator(HistoryAwareResponseGeneator):
 
     def generate(self, prompt: Prompt) -> str:
         response = self._replacer.replace(prompt.get_prompt())
+        self._append_history(prompt, response)
 
         logger.debug('m=generate type=echo response=%s', response)
 
