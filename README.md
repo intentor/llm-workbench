@@ -78,6 +78,12 @@ make run/server
 
 The server will be accessible in [http://localhost:3000/](http://localhost:3000/), with the root nodes of the JSON file as URL paths (e.g. in the demo [db.json file](db.json)) there's a `data` root node, which can be accessible through [http://localhost:3000/data](http://localhost:3000/data).
 
+## Changing the model
+
+By default, the workbench uses the LLM model [Llama3.1](https://ollama.com/library/llama3.1).
+
+To change the LLM model used by the workbench, update the `FROM` parameter in [contextualized_assistant.model](contextualized_assistant.model) file by a model available in the [Ollama library](https://ollama.com/library).
+
 ## Known issues
 
 1. The buttons in the screen are not always disabled during operations. Please be aware that clicking on different buttons during actions may lead to unintended consequences.
