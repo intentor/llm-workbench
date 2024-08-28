@@ -53,12 +53,39 @@ Tools are used directly in the chat message input box.
 | `/context?file="<file name with extension>` | Query chunks only from the specified file. |
 | `/get:<url>`                                | Perform a `GET` to an endpoint URL. |
 | `/echo`                                     | Echo the prompt without sending it to the LLM. Can have replacements `{response*}` can be used for replacements. |
+| `/template`                                 | Get the last response as JSON and apply it to a [Jinja based template](https://jinja.palletsprojects.com/en/3.1.x/templates/), allowing the custom formatting of response without relying on the LLM. The JSON data is available in the `context` variable. Refer to the **Template usage** section for details. |
 
 ## Prompt construction
 
 ```text
 :<label> /<tool> <prompt text, can contain {response:*} for replacement>
 ```
+
+## Template usage
+
+Given a previous JSON response, it's possible to use the `/template` tool to create a template that will be processed using the JSON data.
+
+Given the following JSON as the last response in the prompt history:
+
+```json
+{
+    "name": "User"
+}
+```
+
+The following prompt will generate a response using the JSON as input data:
+
+```text
+/template Name: {{context.name}}
+```
+
+The response to the prompt will be:
+
+```text
+Name: User
+```
+
+More complex responses can be generated using variables, conditionals and loops. Please refer to [Jinja documentation](https://jinja.palletsprojects.com/en/3.1.x/templates/) for more details.
 
 ## API mocking
 

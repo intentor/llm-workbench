@@ -18,12 +18,13 @@ class PromptType(Enum):
     CONTEXT = 2
     ENDPOINT = 3
     ECHO = 4
+    TEMPLATE = 5
 
 
 class Prompt():
     """Define a prompt that will perform an action."""
 
-    PROMPT_PATTERN = r"(\:(?P<label>[a-z0-9-]+)\s)?(?P<context>\/context(\:(?P<context_size>\d+))?(\?file=\"(?P<filename>[\w\.\- ]+)\")?\s)?(?P<endpoint>\/get\:)?(?P<echo>\/echo\s)?(?P<prompt>.*)"
+    PROMPT_PATTERN = r"(\:(?P<label>[a-z0-9-]+)\s)?(?P<context>\/context(\:(?P<context_size>\d+))?(\?file=\"(?P<filename>[\w\.\- ]+)\")?\s)?(?P<endpoint>\/get\:)?(?P<echo>\/echo\s)?(?P<template>\/template\s)?(?P<prompt>.*)"
     """Regex pattern for the prompt structure."""
 
     def __init__(self, text: str):
@@ -42,6 +43,8 @@ class Prompt():
             self._type = PromptType.ENDPOINT
         elif self._match.group('echo') is not None:
             self._type = PromptType.ECHO
+        elif self._match.group('template') is not None:
+            self._type = PromptType.TEMPLATE
         else:
             self._type = PromptType.GENERATE
 

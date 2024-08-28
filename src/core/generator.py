@@ -2,8 +2,10 @@
 
 from abc import abstractmethod
 from logging import getLogger
+import json
 import requests
 
+import jinja2
 from ollama import Client
 
 from core.indexer import ContextIndexer
@@ -112,6 +114,31 @@ class EchoResponseGenerator(HistoryAwareResponseGeneator):
         self._append_history(prompt, response)
 
         logger.debug('m=generate type=echo response=%s', response)
+
+        return response
+
+
+class TemplateResponseGenerator(HistoryAwareResponseGeneator):
+    """Apply the last response as JSON in a template defined by the prompt.."""
+
+    def generate(self, prompt: Prompt) -> str:
+        template_format = self._replacer.replace(prompt.get_prompt())
+
+        try:
+            last_response = self._history.get_last_response()
+            data = json.loads(last_response)
+            context = {"context": data}
+
+            environment = jinja2.Environment()
+            template = environment.from_string(template_format)
+            response = template.render(context)
+        except Exception as e:
+            logger.error("m=generate type=template  e=%s", e)
+            response = ('Could not apply the last response to the template. '
+                        'Please check the previous response and try again.')
+
+        self._append_history(prompt, response)
+        logger.debug('m=generate type=template response=%s', response)
 
         return response
 

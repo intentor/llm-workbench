@@ -390,6 +390,22 @@ from core.prompt import DEFAULT_SIMILARITY_TOP_K, Prompt, PromptType
             '',
             PromptType.ECHO,
             'Prompt'
+        ),
+        (
+            '/template Template',
+            '',
+            DEFAULT_SIMILARITY_TOP_K,
+            '',
+            PromptType.TEMPLATE,
+            'Template'
+        ),
+        (
+            ':label /template Template',
+            'label',
+            DEFAULT_SIMILARITY_TOP_K,
+            '',
+            PromptType.TEMPLATE,
+            'Template'
         )
     ]
 )

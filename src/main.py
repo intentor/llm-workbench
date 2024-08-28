@@ -22,7 +22,8 @@ from core.generator import (
     EchoResponseGenerator,
     EndpointResponseGenerator,
     OllamaResponseGenerator,
-    PromptTypeResponseGenerator
+    PromptTypeResponseGenerator,
+    TemplateResponseGenerator
 )
 from core.prompt import PromptHistory, PromptType
 from ui.component.base import OperationMode, OperationModeManager, UiComponent
@@ -68,6 +69,9 @@ generator = PromptTypeResponseGenerator(
             st.session_state.history
         ),
         PromptType.ECHO: EchoResponseGenerator(
+            st.session_state.history
+        ),
+        PromptType.TEMPLATE: TemplateResponseGenerator(
             st.session_state.history
         )
     }
