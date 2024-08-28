@@ -14,6 +14,7 @@ dependencies = [
     "docx2txt",
     "openpyxl",
     "jinja2",
+    "jinja2-iso8601",
 ]
 
 [project.optional-dependencies]

@@ -129,7 +129,8 @@ class TemplateResponseGenerator(HistoryAwareResponseGeneator):
             data = json.loads(last_response)
             context = {"context": data}
 
-            environment = jinja2.Environment()
+            environment = jinja2.Environment(
+                extensions=['jinja2_iso8601.ISO8601Extension'])
             template = environment.from_string(template_format)
             response = template.render(context)
         except Exception as e:
