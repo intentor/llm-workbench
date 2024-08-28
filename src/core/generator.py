@@ -133,7 +133,7 @@ class TemplateResponseGenerator(HistoryAwareResponseGeneator):
             template = environment.from_string(template_format)
             response = template.render(context)
         except Exception as e:
-            logger.error("m=generate type=template  e=%s", e)
+            logger.error('m=generate type=template  e=%s', e)
             response = ('Could not apply the last response to the template. '
                         'Please check the previous response and try again.')
 
