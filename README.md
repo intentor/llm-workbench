@@ -65,7 +65,7 @@ Tools are used directly in the chat message input box.
 
 Given a previous JSON response, it's possible to use the `/template` tool to create a template that will be processed using the JSON data.
 
-Given the following JSON as the last response in the prompt history:
+Using the following JSON as the last response in the prompt history:
 
 ```json
 {
@@ -73,7 +73,7 @@ Given the following JSON as the last response in the prompt history:
 }
 ```
 
-The following prompt will generate a response using the JSON as input data:
+The prompt below will generate a response using the JSON as input data in the `context` variable:
 
 ```text
 /template Name: {{context.name}}
@@ -85,7 +85,41 @@ The response to the prompt will be:
 Name: User
 ```
 
-More complex responses can be generated using variables, conditionals and loops. Please refer to [Jinja documentation](https://jinja.palletsprojects.com/en/3.1.x/templates/) for more details.
+### Quick Cheat Sheet
+
+#### Setting a variable
+
+```text
+{% set variable_name = context %}
+```
+
+#### Date/time format (from ISO 8601)
+
+```text
+{{context.field_date|parse_date|format_date("%d/%m/%y %H:%M:%S")}}
+```
+
+#### Conditional
+
+```text
+{% if context.field_boolean %}
+Value if True
+{% else %}
+Value if False
+{% endif %})
+```
+
+#### Loop
+
+```text
+ {% for item in context.list %}
+ {{item.field}}
+ {% endfor %}
+```
+
+#### Documentation
+
+Please refer to [Jinja](https://jinja.palletsprojects.com/en/3.1.x/templates/) and [jinja2_iso8601](https://pypi.org/project/jinja2_iso8601/1.0.0/#description) documentations for more details on templating.
 
 ## API mocking
 
