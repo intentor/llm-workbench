@@ -6,6 +6,7 @@ Sessions:
 """
 
 import gc
+import time
 from logging import getLogger
 
 import streamlit as st
@@ -46,10 +47,17 @@ class ChatComponent(UiComponent):
 
         st.markdown(CHAT_CSS, unsafe_allow_html=True)
 
+        start = time.time()
+
         if self._has_replay():
             self._render_replay()
         else:
             self._render_input()
+
+        end = time.time()
+        execution_time = end - start
+        st.text(f"Execution time: {execution_time:,.2f}s")
+        logger.info('m=render elapsed=%d', end - start)
 
     def replay(self, prompts: list[str]):
         """Replay a list of prompts.
