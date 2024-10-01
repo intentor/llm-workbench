@@ -10,6 +10,7 @@ from ollama import Client
 
 from core.indexer import ContextIndexer
 from core.prompt import (
+    GeneratedResponse,
     Prompt,
     PromptHistory,
     PromptHistoryEntry,
@@ -24,7 +25,7 @@ class ResponseGenerator():
     """Generate responses based on a prompt."""
 
     @abstractmethod
-    def generate(self, prompt: Prompt) -> str:
+    def generate(self, prompt: Prompt) -> GeneratedResponse:
         """Generates a respons based on a prompt.
 
         Args:
@@ -49,10 +50,10 @@ class HistoryAwareResponseGeneator(ResponseGenerator):
         self._replacer = PromptPatternReplacer(history)
 
     @abstractmethod
-    def generate(self, prompt: Prompt) -> str:
+    def generate(self, prompt: Prompt) -> GeneratedResponse:
         raise NotImplementedError()
 
-    def _append_history(self, prompt: Prompt, response: str):
+    def _append_history(self, prompt: Prompt, response: GeneratedResponse):
         self._history.append(PromptHistoryEntry(
             label=prompt.get_label(),
             prompt=prompt.get_original_prompt(),
@@ -76,34 +77,43 @@ class ContextResponseGenerator(HistoryAwareResponseGeneator):
         super().__init__(history)
         self._indexer = indexer
 
-    def generate(self, prompt: Prompt) -> str:
+    def generate(self, prompt: Prompt) -> GeneratedResponse:
         prompt_text = self._replacer.replace(prompt.get_prompt())
         response = self._indexer.query(
             prompt_text,
             prompt.get_top_k(),
             prompt.get_file_name())
-        self._append_history(prompt, response)
+
+        generated_response = GeneratedResponse(
+            value=response
+
+        )
+        self._append_history(prompt, generated_response)
 
         logger.debug('m=generate type=context prompt=%s response=%s',
-                     prompt_text, response)
+                     prompt_text, generated_response)
 
-        return response
+        return generated_response
 
 
 class EndpointResponseGenerator(HistoryAwareResponseGeneator):
     """Generate responses from endpoints."""
 
-    def generate(self, prompt: Prompt) -> str:
+    def generate(self, prompt: Prompt) -> GeneratedResponse:
         url = prompt.get_prompt()
 
         response = requests.get(url, timeout=10)
         contents = response.text
-        self._append_history(prompt, contents)
+
+        generated_response = GeneratedResponse(
+            value=contents
+        )
+        self._append_history(prompt, generated_response)
 
         logger.debug('m=generate type=endpoint url=%s response=%s',
-                     url, response)
+                     url, generated_response)
 
-        return contents
+        return generated_response
 
 
 class EchoResponseGenerator(HistoryAwareResponseGeneator):
@@ -111,17 +121,21 @@ class EchoResponseGenerator(HistoryAwareResponseGeneator):
 
     def generate(self, prompt: Prompt) -> str:
         response = self._replacer.replace(prompt.get_prompt())
-        self._append_history(prompt, response)
 
-        logger.debug('m=generate type=echo response=%s', response)
+        generated_response = GeneratedResponse(
+            value=response
+        )
+        self._append_history(prompt, generated_response)
 
-        return response
+        logger.debug('m=generate type=echo response=%s', generated_response)
+
+        return generated_response
 
 
 class TemplateResponseGenerator(HistoryAwareResponseGeneator):
     """Apply the last response as JSON in a template defined by the prompt.."""
 
-    def generate(self, prompt: Prompt) -> str:
+    def generate(self, prompt: Prompt) -> GeneratedResponse:
         template_format = self._replacer.replace(prompt.get_prompt())
 
         try:
@@ -138,10 +152,15 @@ class TemplateResponseGenerator(HistoryAwareResponseGeneator):
             response = ('Could not apply the last response to the template. '
                         'Please check the previous response and try again.')
 
-        self._append_history(prompt, response)
-        logger.debug('m=generate type=template response=%s', response)
+        generated_response = GeneratedResponse(
+            value=response
+        )
+        self._append_history(prompt, generated_response)
 
-        return response
+        logger.debug('m=generate type=template response=%s',
+                     generated_response)
+
+        return generated_response
 
 
 class OllamaResponseGenerator(HistoryAwareResponseGeneator):
@@ -163,16 +182,22 @@ class OllamaResponseGenerator(HistoryAwareResponseGeneator):
         self._ollama = ollama
         self._model_name = model_name
 
-    def generate(self, prompt: Prompt) -> str:
+    def generate(self, prompt: Prompt) -> GeneratedResponse:
         prompt_text = self._replacer.replace(prompt.get_prompt())
         ollama_response = self._ollama.generate(self._model_name, prompt_text)
         response = ollama_response['response']
-        self._append_history(prompt, response)
+
+        generated_response = GeneratedResponse(
+            value=response,
+            input_tokens=ollama_response['prompt_eval_count'],
+            output_tokens=ollama_response['eval_count']
+        )
+        self._append_history(prompt, generated_response)
 
         logger.debug('m=generate type=ollama prompt=%s response=%s',
-                     prompt_text, response)
+                     prompt_text, generated_response)
 
-        return response
+        return generated_response
 
 
 class PromptTypeResponseGenerator(ResponseGenerator):
@@ -188,7 +213,7 @@ class PromptTypeResponseGenerator(ResponseGenerator):
         """
         self._generators = generators
 
-    def generate(self, prompt: Prompt) -> str:
+    def generate(self, prompt: Prompt) -> GeneratedResponse:
         prompt_type = prompt.get_prompt_type()
 
         if prompt_type in self._generators:

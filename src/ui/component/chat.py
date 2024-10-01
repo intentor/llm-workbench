@@ -59,7 +59,11 @@ class ChatComponent(UiComponent):
         execution_time: float = end - st.session_state.execution_start
         del st.session_state['execution_start']
 
-        st.text(f"Execution time: {execution_time:,.2f}s")
+        st.text(
+            f"Execution time: {execution_time:,.2f}s | "
+            f"Input tokens: {self._history.get_total_input_tokens()} | "
+            f"Output tokens: {self._history.get_total_output_tokens()}"
+        )
         logger.info('m=render elapsed=%f', execution_time)
 
     def replay(self, prompts: list[str]):
@@ -94,7 +98,7 @@ class ChatComponent(UiComponent):
         for entry in self._history:
             self._render_message(ROLE_USER, entry.prompt)
             if entry.response:
-                self._render_message(ROLE_BOT, entry.response)
+                self._render_message(ROLE_BOT, entry.response.value)
 
     def _render_replay(self):
         for prompt in st.session_state.replay:
@@ -112,4 +116,4 @@ class ChatComponent(UiComponent):
 
         with st.spinner("Thinking..."):
             response = self._generator.generate(Prompt(prompt))
-            self._render_message(ROLE_BOT, response)
+            self._render_message(ROLE_BOT, response.value)

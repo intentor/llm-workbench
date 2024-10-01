@@ -78,6 +78,20 @@ class Prompt():
 
 
 @dataclass
+class GeneratedResponse():
+    """Defines a generated response."""
+
+    value: str
+    """Response generated."""
+
+    input_tokens: int = 0
+    """Total number of input tokens. Can be 0 in case no model was used."""
+
+    output_tokens: int = 0
+    """Total number of output tokens. Can be 0 in case no model was used."""
+
+
+@dataclass
 class PromptHistoryEntry():
     """Defines an entry in the prompt history."""
 
@@ -87,7 +101,7 @@ class PromptHistoryEntry():
     prompt: str
     """Prompt that performed an action."""
 
-    response: str
+    response: GeneratedResponse
     """Response from the prompt action."""
 
 
@@ -100,7 +114,7 @@ class PromptHistory(list[PromptHistoryEntry]):
 
     def get_last_response(self) -> str:
         """Get the last response in the history."""
-        return self[-1].response if self else ''
+        return self[-1].response.value if self else ''
 
     def get_response_by_label(self, label: str) -> list[str]:
         """Get response by label.
@@ -108,14 +122,23 @@ class PromptHistory(list[PromptHistoryEntry]):
         Args:
             - label: Label to look for.
         """
-        return [entry.response for entry in self if entry.label == label]
+        return [entry.response.value for entry in self if entry.label == label]
 
     def get_as_string(self) -> str:
-        """Get the entire history as string, with messages separated by 
+        """Get the entire history as string, with messages separated by
         line breaks."""
         return HISTORY_ITEM_SEPARATOR.join(
-            [item.prompt + HISTORY_ITEM_SEPARATOR + item.response for item in self]
+            [item.prompt + HISTORY_ITEM_SEPARATOR +
+                item.response.value for item in self]
         )
+
+    def get_total_input_tokens(self) -> int:
+        """Get the total number of input tokens of entries in the history."""
+        return sum(entry.response.input_tokens for entry in self)
+
+    def get_total_output_tokens(self) -> int:
+        """Get the total number of output tokens of entries in the history."""
+        return sum(entry.response.output_tokens for entry in self)
 
 
 class PromptPatternReplacer():

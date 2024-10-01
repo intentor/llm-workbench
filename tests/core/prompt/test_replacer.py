@@ -46,7 +46,7 @@ Rest of the prompt
     expected_replaced_prompt = f"""
 Prompt to perform an action
 -------------------
-{entry1.response}
+{entry1.response.value}
 -------------------
 Rest of the prompt
 """
@@ -70,7 +70,7 @@ Rest of the prompt
     expected_replaced_prompt = f"""
 Prompt to perform an action
 -------------------
-{entry2.response}
+{entry2.response.value}
 -------------------
 Rest of the prompt
 """
@@ -116,7 +116,7 @@ Rest of the prompt
     expected_replaced_prompt = f"""
 Prompt to perform an action
 -------------------
-{entry1.response}
+{entry1.response.value}
 -------------------
 Rest of the prompt
 """
@@ -143,10 +143,10 @@ Rest of the prompt
     expected_replaced_prompt = f"""
 Prompt to perform an action
 -------------------
-{entry1.response}
+{entry1.response.value}
 ---
-{entry2.response}
-{entry2.response}
+{entry2.response.value}
+{entry2.response.value}
 -------------------
 Rest of the prompt
 """
