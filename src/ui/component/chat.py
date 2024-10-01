@@ -47,8 +47,7 @@ class ChatComponent(UiComponent):
 
         st.markdown(CHAT_CSS, unsafe_allow_html=True)
 
-        if 'execution_start' not in st.session_state:
-            st.session_state.execution_start = timer()
+        st.session_state.execution_start = timer()
 
         if self._has_replay():
             self._render_replay()
@@ -57,7 +56,6 @@ class ChatComponent(UiComponent):
 
         end = timer()
         execution_time: float = end - st.session_state.execution_start
-        del st.session_state['execution_start']
 
         st.text(
             f"Execution time: {execution_time:,.2f}s | "
@@ -81,6 +79,7 @@ class ChatComponent(UiComponent):
     def clear_history(self):
         """Clear all chat messages."""
         self._history.clear()
+        st.session_state.execution_start = 0
         gc.collect()
 
     def _reset_replay(self):
