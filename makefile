@@ -16,15 +16,17 @@ clean:
 	@if [ -d $(dataDir) ]; then rm -Rf $(dataDir); fi
 
 # Perform first time setup.
-setup: setup/model setup/env
+setup: setup/model setup/model/embedding setup/env
 
-# Configure the model used by the application.
+# Configure the LLM model used by the application.
 setup/model:
-	-ollama rm $(embeddingModelName)
-	ollama pull $(embeddingModelName)
-
 	-ollama rm $(llmModelName)
 	ollama create $(llmModelName) -f $(modelFileName)
+
+# Configure the embedding model used by the application.
+setup/model/embedding:
+	-ollama rm $(embeddingModelName)
+	ollama pull $(embeddingModelName)
 
 # Configure the virtual environment and dependencies.
 setup/env:
