@@ -10,7 +10,7 @@ LOG_FORMAT: str = os.getenv(
 OLLAMA_HOST: str = os.getenv('LLM_HOST', 'http://localhost:11434')
 """Host of the Ollama server."""
 
-OLLAMA_REQUEST_TIMEOUT: float = float(os.getenv('LLM_TIMEOUT', '300.0'))
+OLLAMA_REQUEST_TIMEOUT: float = float(os.getenv('LLM_TIMEOUT', '600.0'))
 """Request timeout to the Ollama server."""
 
 MODEL_EMBEDDINGS: str = os.getenv('MODEL_EMBEDDINGS', 'nomic-embed-text')
