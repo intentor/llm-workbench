@@ -200,6 +200,61 @@ class OllamaResponseGenerator(HistoryAwareResponseGeneator):
         return generated_response
 
 
+class OpenRouterResponseGenerator(HistoryAwareResponseGeneator):
+    """Generate responses from an LLM using OpenRouter."""
+
+    def __init__(
+        self,
+            history: PromptHistory,
+            api_url: str,
+            api_key: str,
+            model_name: str = 'llama3'
+    ):
+        """
+        Args:
+            - history: Prompt history manager.
+            - api_url: OpenRouter's API endpoint.
+            - api_key: OpenRouter's API key.
+            - model_name: Name of the LLM model used for generation.
+        """
+        super().__init__(history)
+        self._api_url = api_url
+        self._api_key = api_key
+        self._model_name = model_name
+
+    def generate(self, prompt: Prompt) -> GeneratedResponse:
+        prompt_text = self._replacer.replace(prompt.get_prompt())
+
+        response = requests.post(
+            url=self._api_url,
+            headers={
+                'Authorization': f"Bearer {self._api_key}"
+            },
+            data=json.dumps({
+                'model': self._model_name,
+                'messages': [
+                    {
+                        'role': "user",
+                        'content': prompt_text
+                    }
+                ]
+            })
+        )
+
+        api_response = response.json()
+        generated_response = GeneratedResponse(
+            value=api_response['choices'][0]['message']['content'],
+            input_tokens=api_response['usage']['prompt_tokens'],
+            output_tokens=api_response['usage']['completion_tokens']
+        )
+        self._append_history(prompt, generated_response)
+
+        logger.debug('m=generate type=openrouter prompt=%s response=%s',
+                     prompt_text, generated_response)
+
+        return generated_response
+
+
 class PromptTypeResponseGenerator(ResponseGenerator):
     """Generate responses based on prompt types."""
 

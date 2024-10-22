@@ -11,9 +11,12 @@ import ollama
 from config import (
     LOG_FORMAT,
     MODEL_EMBEDDINGS,
+    MODEL_GENERATOR,
     MODEL_LLM,
     OLLAMA_HOST,
     OLLAMA_REQUEST_TIMEOUT,
+    OPEN_ROUTER_HOST,
+    OPEN_ROUTER_KEY,
     VECTOR_DB_PATH
 )
 from core.indexer import ContextIndexer
@@ -22,6 +25,7 @@ from core.generator import (
     EchoResponseGenerator,
     EndpointResponseGenerator,
     OllamaResponseGenerator,
+    OpenRouterResponseGenerator,
     PromptTypeResponseGenerator,
     TemplateResponseGenerator
 )
@@ -54,13 +58,24 @@ indexer = ContextIndexer(
     st.session_state.id,
     MODEL_EMBEDDINGS
 )
+
+if MODEL_GENERATOR == 'OPENROUTER':
+    model_generator = OpenRouterResponseGenerator(
+        st.session_state.history,
+        OPEN_ROUTER_HOST,
+        OPEN_ROUTER_KEY,
+        MODEL_LLM
+    )
+else:
+    model_generator = OllamaResponseGenerator(
+        st.session_state.history,
+        ollama,
+        MODEL_LLM
+    )
+
 generator = PromptTypeResponseGenerator(
     {
-        PromptType.GENERATE: OllamaResponseGenerator(
-            st.session_state.history,
-            ollama,
-            MODEL_LLM
-        ),
+        PromptType.GENERATE: model_generator,
         PromptType.CONTEXT: ContextResponseGenerator(
             st.session_state.history,
             indexer
@@ -105,6 +120,25 @@ def open_replay():
     mode_manager.set_mode(OperationMode.REPLAY)
 
 
+@st.dialog('Save chat history')
+def save_chat_history(history: str):
+    st.download_button(
+        label='Save as HTML',
+        help='Download contents as text.',
+        data=history,
+        file_name='chat.txt',
+        mime='text/plain',
+    )
+
+    st.download_button(
+        label='Save as HTML',
+        help='Download contents as HTML.',
+        data=history,
+        file_name='chat.html',
+        mime='text/html',
+    )
+
+
 with st.sidebar:
     context.render()
     st.caption(f"Session {st.session_state.id}")
@@ -135,21 +169,19 @@ with col_button1:
     )
 
 with col_button2:
-    st.download_button(
+    st.button(
         label='Save all',
-        help='Download the chat history as a text file.',
-        data=st.session_state.history.get_as_string(),
-        file_name="chat.txt",
-        mime="text/plain",
+        help='Download the chat history.',
+        on_click=save_chat_history,
+        args=(st.session_state.history.get_as_string())
     )
 
 with col_button3:
-    st.download_button(
+    st.button(
         label='Save last',
-        help='Download the last chat history message as a text file.',
-        data=st.session_state.history.get_last_response(),
-        file_name="chat.txt",
-        mime="text/plain",
+        help='Download the last chat history message',
+        on_click=save_chat_history,
+        args=(st.session_state.history.get_last_response())
     )
 
 with col_button4:
