@@ -242,6 +242,10 @@ class OpenRouterResponseGenerator(HistoryAwareResponseGeneator):
         )
 
         api_response = response.json()
+
+        logger.debug('m=generate type=openrouter api_response=%s',
+                     api_response)
+
         generated_response = GeneratedResponse(
             value=api_response['choices'][0]['message']['content'],
             input_tokens=api_response['usage']['prompt_tokens'],
