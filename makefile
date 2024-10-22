@@ -1,12 +1,13 @@
 SHELL := /bin/bash
 
+cmdPython := python3.12
 venvDir := .venv
 dataDir := .data
 embeddingModelName := nomic-embed-text
 llmModelName := contextualized_assistant
 modelFileName := contextualized_assistant.model
 cmdVenvActivate := source $(venvDir)/bin/activate
-cmdAppRun := python3 -m streamlit run src/main.py
+cmdAppRun := $(cmdPython) -m streamlit run src/main.py
 
 # Set the default target for the makefile.
 default: run
@@ -33,9 +34,9 @@ setup/env:
 	@( \
 		if [ -d $(venvDir) ]; then rm -Rf $(venvDir); fi; \
 		mkdir $(venvDir); \
-		python3 -m venv $(venvDir); \
-    	$(cmdVenvActivate); \
-       	python3 -m pip install -e . 'llm-workbench[test]' --upgrade; \
+		$(cmdPython) -m venv $(venvDir); \
+		$(cmdVenvActivate); \
+		pip install -e . 'llm-workbench[test]' --upgrade; \
     )
 
 # Configure the fake server for API mocking.
@@ -46,14 +47,14 @@ setup/server:
 setup/update:
 	@( \
 		$(cmdVenvActivate); \
-		python3 -m pip install --upgrade pip; \
-       	python3 -m pip install -e . --upgrade; \
+		pip install --upgrade pip; \
+		pip install -e . --upgrade; \
     )
 
 # Start the application.
 run:
 	@( \
-    	$(cmdVenvActivate); \
+		$(cmdVenvActivate); \
 		$(cmdAppRun); \
     )
 
@@ -64,6 +65,6 @@ run/server:
 # Run tests.
 test:
 	@( \
-    	$(cmdVenvActivate); \
-		python3 -m pytest ./tests; \
+		$(cmdVenvActivate); \
+		$(cmdPython) -m pytest ./tests; \
     )
