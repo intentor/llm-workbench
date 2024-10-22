@@ -123,7 +123,7 @@ def open_replay():
 @st.dialog('Save chat history')
 def save_chat_history(history: str):
     st.download_button(
-        label='Save as HTML',
+        label='Save as text',
         help='Download contents as text.',
         data=history,
         file_name='chat.txt',
@@ -173,7 +173,7 @@ with col_button2:
         label='Save all',
         help='Download the chat history.',
         on_click=save_chat_history,
-        args=(st.session_state.history.get_as_string())
+        args=(st.session_state.history.get_as_string(),)
     )
 
 with col_button3:
@@ -181,7 +181,7 @@ with col_button3:
         label='Save last',
         help='Download the last chat history message',
         on_click=save_chat_history,
-        args=(st.session_state.history.get_last_response())
+        args=(st.session_state.history.get_last_response(),)
     )
 
 with col_button4:
