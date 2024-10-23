@@ -145,6 +145,19 @@ By default, the workbench uses the LLM model [Llama3.1](https://ollama.com/libra
 
 To change the LLM model used by the workbench, update the `FROM` parameter in [contextualized_assistant.model](contextualized_assistant.model) file by a model available in the [Ollama library](https://ollama.com/library).
 
+## Using OpenRouter for generation
+
+It's possible to use [OpenRuter](https://openrouter.ai) for requesting LLM generation from prompts, which replaces the default Ollama generator.
+
+To setup OpenRouter, update the [config.py](./src/config.py) settings below:
+
+- `OPEN_ROUTER_KEY`: Enter your [OpenRouter API key](https://openrouter.ai/docs/api-keys).
+- `MODEL_GENERATOR`: Change to `OPENROUTER`.
+- `MODEL_LLM`: Enter the model name from OpenRouter.
+
+> [!NOTE]  
+> The embebbding model still requires Ollama.
+
 ## Known issues
 
 1. The buttons in the screen are not always disabled during operations. Please be aware that clicking on different buttons during actions may lead to unintended consequences.
