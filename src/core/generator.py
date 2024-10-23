@@ -21,6 +21,11 @@ from core.prompt import (
 logger = getLogger()
 
 
+class GenerationError(Exception):
+    def __init__(self, message: str = 'Error when performing generation.'):
+        super().__init__(message)
+
+
 class ResponseGenerator():
     """Generate responses based on a prompt."""
 
@@ -225,38 +230,47 @@ class OpenRouterResponseGenerator(HistoryAwareResponseGeneator):
     def generate(self, prompt: Prompt) -> GeneratedResponse:
         prompt_text = self._replacer.replace(prompt.get_prompt())
 
-        response = requests.post(
-            url=self._api_url,
-            headers={
-                'Authorization': f"Bearer {self._api_key}"
-            },
-            data=json.dumps({
-                'model': self._model_name,
-                'messages': [
-                    {
-                        'role': "user",
-                        'content': prompt_text
-                    }
-                ]
-            })
-        )
+        try:
+            response = requests.post(
+                url=self._api_url,
+                headers={
+                    'Authorization': f"Bearer {self._api_key}"
+                },
+                data=json.dumps({
+                    'model': self._model_name,
+                    'messages': [
+                        {
+                            'role': "user",
+                            'content': prompt_text
+                        }
+                    ]
+                })
+            )
+        except Exception as ex:
+            raise GenerationError(
+                'Cannot perform request to OpenRouter') from ex
 
-        api_response = response.json()
+        status_code: int = response.status_code
+        if status_code == 200:
+            api_response = response.json()
 
-        logger.debug('m=generate type=openrouter api_response=%s',
-                     api_response)
+            logger.debug('m=generate type=openrouter api_response=%s',
+                         api_response)
 
-        generated_response = GeneratedResponse(
-            value=api_response['choices'][0]['message']['content'],
-            input_tokens=api_response['usage']['prompt_tokens'],
-            output_tokens=api_response['usage']['completion_tokens']
-        )
-        self._append_history(prompt, generated_response)
+            generated_response = GeneratedResponse(
+                value=api_response['choices'][0]['message']['content'],
+                input_tokens=api_response['usage']['prompt_tokens'],
+                output_tokens=api_response['usage']['completion_tokens']
+            )
+            self._append_history(prompt, generated_response)
 
-        logger.debug('m=generate type=openrouter prompt=%s response=%s',
-                     prompt_text, generated_response)
+            logger.debug('m=generate type=openrouter prompt=%s response=%s',
+                         prompt_text, generated_response)
 
-        return generated_response
+            return generated_response
+        else:
+            raise GenerationError(
+                f"OpenRouter HTTP request error: {status_code}")
 
 
 class PromptTypeResponseGenerator(ResponseGenerator):
