@@ -23,14 +23,13 @@ OPEN_ROUTER_REQUEST_TIMEOUT: int = int(
     os.getenv('OPEN_ROUTER_TIMEOUT', '60000'))
 """Request timeout to the OpenRouter server, in miliseconds."""
 
-MODEL_GENERATOR: str = os.getenv('MODEL_GENERATOR', 'OLLAMA')
-"""Generator used for LLM generation (OLLAMA, OPENROUTER). Defaults to OLLAMA."""
+MODEL_GATEWAY: str = os.getenv('MODEL_GATEWAY', 'OLLAMA')
+"""Gateway used for LLM generation (OLLAMA, OPENROUTER). Defaults to OLLAMA."""
 
 MODEL_EMBEDDINGS: str = os.getenv('MODEL_EMBEDDINGS', 'nomic-embed-text')
 """Name of the embedding model used by the application."""
 
-MODEL_LLM: str = os.getenv(
-    'MODEL_LLM', 'meta-llama/llama-3.1-70b-instruct:free')
+MODEL_LLM: str = os.getenv('MODEL_LLM', 'contextualized-assistant')
 """Name of the LLM model used by the application."""
 
 VECTOR_DB_PATH: str = os.getenv('VECTOR_DB_PATH', './.data/vdb')
