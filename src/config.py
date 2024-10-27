@@ -18,7 +18,7 @@ OPEN_ROUTER_HOST: str = os.getenv(
 """Host of the OpenRouter API."""
 
 OPEN_ROUTER_KEY: str = os.getenv(
-    'OPEN_ROUTER_KEY', '###')
+    'OPEN_ROUTER_KEY', '<Replace with your key>')
 """Key of the OpenRouter API."""
 
 OPEN_ROUTER_REQUEST_TIMEOUT: int = int(
