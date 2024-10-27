@@ -46,7 +46,6 @@ class ContextResponseGenerator(HistoryAwareResponseGeneator):
 
         generated_response = GeneratedResponse(
             value=response
-
         )
         self._append_history(prompt, generated_response)
 
