@@ -11,7 +11,7 @@ import ollama
 from config import (
     LOG_FORMAT,
     MODEL_EMBEDDINGS,
-    MODEL_GENERATOR,
+    MODEL_GATEWAY,
     MODEL_LLM,
     OLLAMA_HOST,
     OLLAMA_REQUEST_TIMEOUT,
@@ -26,6 +26,7 @@ from core.prompting.generator.echo import EchoResponseGenerator
 from core.prompting.generator.endpoint import EndpointResponseGenerator
 from core.prompting.generator.ollama import OllamaResponseGenerator
 from core.prompting.generator.openrouter import OpenRouterResponseGenerator
+from core.prompting.generator.rag import RagResponseGenerator
 from core.prompting.generator.selector import SelectorResponseGenerator
 from core.prompting.generator.template import TemplateResponseGenerator
 from core.prompting.history import PromptHistory
@@ -58,8 +59,17 @@ indexer = ContextIndexer(
     MODEL_EMBEDDINGS
 )
 
-if MODEL_GENERATOR == 'OPENROUTER':
-    model_gateway = OpenRouterResponseGenerator(
+generator_ollama = OllamaResponseGenerator(
+    st.session_state.history,
+    ollama,
+    MODEL_LLM
+)
+generator_context = ContextResponseGenerator(
+    st.session_state.history,
+    indexer
+)
+if MODEL_GATEWAY == 'OPENROUTER':
+    generator_gateway = OpenRouterResponseGenerator(
         st.session_state.history,
         OPEN_ROUTER_HOST,
         OPEN_ROUTER_KEY,
@@ -67,18 +77,16 @@ if MODEL_GENERATOR == 'OPENROUTER':
         MODEL_LLM
     )
 else:
-    model_gateway = OllamaResponseGenerator(
-        st.session_state.history,
-        ollama,
-        MODEL_LLM
-    )
+    generator_gateway = generator_ollama
 
 generator = SelectorResponseGenerator(
     [
-        model_gateway,
-        ContextResponseGenerator(
+        generator_gateway,
+        generator_context,
+        RagResponseGenerator(
             st.session_state.history,
-            indexer
+            generator_ollama,
+            generator_context
         ),
         EndpointResponseGenerator(
             st.session_state.history
