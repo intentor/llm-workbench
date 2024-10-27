@@ -49,9 +49,9 @@ Tools are used directly in the chat message input box.
 | `{response:last}`                           | Replaced by the last response in the chat history. |
 | `{response:label:<label>}`                  | Replaced by the labeled response in the chat history. |
 | `/context`                                  | Query chunks from uploaded files. |
-| `/context:<number>`                         | Set the number of chunks to return. |
+| `/context?top-k=<number>`                   | Set the number of chunks to return. |
 | `/context?file="<file name with extension>` | Query chunks only from the specified file. |
-| `/get:<url>`                                | Perform a `GET` to an endpoint URL. |
+| `/endpoint <url>`                           | Perform a `GET` to the provided URL. |
 | `/echo`                                     | Echo the prompt without sending it to the LLM. Can have replacements `{response*}` can be used for replacements. |
 | `/template`                                 | Get the last response as JSON and apply it to a [Jinja based template](https://jinja.palletsprojects.com/en/3.1.x/templates/), allowing the custom formatting of response without relying on the LLM. The JSON data is available in the `context` variable. Refer to the **Template usage** section for details. |
 

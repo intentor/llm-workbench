@@ -17,19 +17,18 @@ from config import (
     OLLAMA_REQUEST_TIMEOUT,
     OPEN_ROUTER_HOST,
     OPEN_ROUTER_KEY,
+    OPEN_ROUTER_REQUEST_TIMEOUT,
     VECTOR_DB_PATH
 )
-from core.indexer import ContextIndexer
-from core.generator import (
-    ContextResponseGenerator,
-    EchoResponseGenerator,
-    EndpointResponseGenerator,
-    OllamaResponseGenerator,
-    OpenRouterResponseGenerator,
-    PromptTypeResponseGenerator,
-    TemplateResponseGenerator
-)
-from core.prompt import PromptHistory, PromptType
+from core.prompting.indexer import ContextIndexer
+from core.prompting.generator.context import ContextResponseGenerator
+from core.prompting.generator.echo import EchoResponseGenerator
+from core.prompting.generator.endpoint import EndpointResponseGenerator
+from core.prompting.generator.ollama import OllamaResponseGenerator
+from core.prompting.generator.openrouter import OpenRouterResponseGenerator
+from core.prompting.generator.selector import SelectorResponseGenerator
+from core.prompting.generator.template import TemplateResponseGenerator
+from core.prompting.history import PromptHistory
 from ui.component.base import OperationMode, OperationModeManager, UiComponent
 from ui.component.chat import ChatComponent
 from ui.component.context import ContextCompoonent
@@ -60,36 +59,37 @@ indexer = ContextIndexer(
 )
 
 if MODEL_GENERATOR == 'OPENROUTER':
-    model_generator = OpenRouterResponseGenerator(
+    model_gateway = OpenRouterResponseGenerator(
         st.session_state.history,
         OPEN_ROUTER_HOST,
         OPEN_ROUTER_KEY,
+        OPEN_ROUTER_REQUEST_TIMEOUT,
         MODEL_LLM
     )
 else:
-    model_generator = OllamaResponseGenerator(
+    model_gateway = OllamaResponseGenerator(
         st.session_state.history,
         ollama,
         MODEL_LLM
     )
 
-generator = PromptTypeResponseGenerator(
-    {
-        PromptType.GENERATE: model_generator,
-        PromptType.CONTEXT: ContextResponseGenerator(
+generator = SelectorResponseGenerator(
+    [
+        model_gateway,
+        ContextResponseGenerator(
             st.session_state.history,
             indexer
         ),
-        PromptType.ENDPOINT: EndpointResponseGenerator(
+        EndpointResponseGenerator(
             st.session_state.history
         ),
-        PromptType.ECHO: EchoResponseGenerator(
+        EchoResponseGenerator(
             st.session_state.history
         ),
-        PromptType.TEMPLATE: TemplateResponseGenerator(
+        TemplateResponseGenerator(
             st.session_state.history
         )
-    }
+    ]
 )
 
 mode_manager = OperationModeManager(OperationMode.CHAT)
@@ -173,7 +173,7 @@ with col_button2:
         label='Save all',
         help='Download the chat history.',
         on_click=save_chat_history,
-        args=(st.session_state.history.get_as_string(),)
+        args=(str(st.session_state.history),)
     )
 
 with col_button3:

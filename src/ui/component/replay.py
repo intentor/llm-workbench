@@ -12,7 +12,7 @@ from logging import getLogger
 
 import streamlit as st
 
-from core.prompt import PromptHistory
+from core.prompting.history import PromptHistory
 from ui.component.base import OperationMode, OperationModeManager, UiComponent
 from ui.component.chat import ChatComponent
 

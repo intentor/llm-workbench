@@ -11,8 +11,8 @@ from timeit import default_timer as timer
 
 import streamlit as st
 
-from core.generator import ResponseGenerator
-from core.prompt import Prompt, PromptHistory
+from core.prompting.base import ResponseGenerator
+from core.prompting.history import Prompt, PromptHistory
 from ui.component.base import OperationModeManager, UiComponent
 
 CHAT_CSS = """

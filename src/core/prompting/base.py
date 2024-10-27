@@ -6,12 +6,13 @@ import re
 from attr import dataclass
 
 DEFAULT_PROMPT_PART_RETURN = ''
+DEFULT_GENERATOR_TYPE = 'gateway'
 
 
 class Prompt():
     """Define a prompt structure."""
 
-    PROMPT_PATTERN = r"(\:(?P<label>[a-z0-9-]+)\s)?(\/(?P<tool>[a-z]+)(\?(?P<params>[A-Za-z0-9&=\-_]+))?)?(\s?(?P<prompt>.*))?"
+    PROMPT_PATTERN = r"(\:(?P<label>[a-z0-9-]+)\s)?(\/(?P<generator>[a-z]+)(\?(?P<params>[A-Za-z0-9&=\.\-_]+))?)?(\s?(?P<prompt>.*))?"
     """Regex pattern for the prompt structure."""
 
     def __init__(self, text: str):
@@ -40,13 +41,13 @@ class Prompt():
         label = self._match.group('label')
         return label if label is not None else DEFAULT_PROMPT_PART_RETURN
 
-    def get_tool_name(self) -> str:
-        """Return the tool name, if available."""
-        label = self._match.group('tool')
-        return label if label is not None else DEFAULT_PROMPT_PART_RETURN
+    def get_generator_type(self) -> str:
+        """Return the name/type of the generator to be used for this prompt."""
+        label = self._match.group('generator')
+        return label if label is not None else DEFULT_GENERATOR_TYPE
 
-    def get_tool_parameters(self) -> dict[str, str]:
-        """Return the tool name, if available."""
+    def get_generator_parameters(self) -> dict[str, str]:
+        """Return the generator parameters, if available."""
         parameters_text = self._match.group('params')
 
         parameters = {}
@@ -78,6 +79,11 @@ class ResponseGenerator():
     """Generate responses based on a prompt."""
 
     @abstractmethod
+    def get_type(self) -> str:
+        """Get the type name of the generator."""
+        raise NotImplementedError()
+
+    @abstractmethod
     def generate(self, prompt: Prompt) -> GeneratedResponse:
         """Generates a respons based on a prompt.
 
@@ -88,3 +94,8 @@ class ResponseGenerator():
             Response from the generation.
         """
         raise NotImplementedError()
+
+
+class GenerationError(Exception):
+    def __init__(self, message: str = 'Error when performing generation.'):
+        super().__init__(message)

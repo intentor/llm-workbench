@@ -2,107 +2,107 @@
 
 import pytest
 
-from core.prompting.base import Prompt
+from core.prompting.base import Prompt, DEFULT_GENERATOR_TYPE
 
 
 @pytest.mark.parametrize(
-    'prompt,label,tool_name,tool_parameters,actual_prompt', [
+    'prompt,label,generator_type,generator_parameters,actual_prompt', [
         (
             'Prompt text',
             '',
-            '',
+            DEFULT_GENERATOR_TYPE,
             {},
             'Prompt text'
         ),
         (
-            '/toolname',
+            '/generatortype',
             '',
-            'toolname',
+            'generatortype',
             {},
             ''
         ),
         (
-            '/toolname?param1=value_test1',
+            '/generatortype?param1=value_test.1',
             '',
-            'toolname',
-            {'param1': 'value_test1'},
+            'generatortype',
+            {'param1': 'value_test.1'},
             ''
         ),
         (
-            '/toolname?param1=value_test1&param2=value-test2',
+            '/generatortype?param1=value_test.1&param2=value-test2',
             '',
-            'toolname',
-            {'param1': 'value_test1', 'param2': 'value-test2'},
+            'generatortype',
+            {'param1': 'value_test.1', 'param2': 'value-test2'},
             ''
         ),
         (
-            '/toolname Prompt text',
+            '/generatortype Prompt text',
             '',
-            'toolname',
+            'generatortype',
             {},
             'Prompt text'
         ),
         (
-            '/toolname?param1=value_test1 Prompt text',
+            '/generatortype?param1=value_test.1 Prompt text',
             '',
-            'toolname',
-            {'param1': 'value_test1'},
+            'generatortype',
+            {'param1': 'value_test.1'},
             'Prompt text'
         ),
         (
-            '/toolname?param1=value_test1&param2=value-test2 Prompt text',
+            '/generatortype?param1=value_test.1&param2=value-test2 Prompt text',
             '',
-            'toolname',
-            {'param1': 'value_test1', 'param2': 'value-test2'},
+            'generatortype',
+            {'param1': 'value_test.1', 'param2': 'value-test2'},
             'Prompt text'
         ),
         (
             ':lbl-test1 Prompt text',
             'lbl-test1',
-            '',
+            DEFULT_GENERATOR_TYPE,
             {},
             'Prompt text'
         ),
         (
-            ':lbl-test1 /toolname',
+            ':lbl-test1 /generatortype',
             'lbl-test1',
-            'toolname',
+            'generatortype',
             {},
             ''
         ),
         (
-            ':lbl-test1 /toolname?param1=value_test1',
+            ':lbl-test1 /generatortype?param1=value_test.1',
             'lbl-test1',
-            'toolname',
-            {'param1': 'value_test1'},
+            'generatortype',
+            {'param1': 'value_test.1'},
             ''
         ),
         (
-            ':lbl-test1 /toolname?param1=value_test1&param2=value-test2',
+            ':lbl-test1 /generatortype?param1=value_test.1&param2=value-test2',
             'lbl-test1',
-            'toolname',
-            {'param1': 'value_test1', 'param2': 'value-test2'},
+            'generatortype',
+            {'param1': 'value_test.1', 'param2': 'value-test2'},
             ''
         ),
         (
-            ':lbl-test1 /toolname Prompt text',
+            ':lbl-test1 /generatortype Prompt text',
             'lbl-test1',
-            'toolname',
+            'generatortype',
             {},
             'Prompt text'
         ),
         (
-            ':lbl-test1 /toolname?param1=value_test1 Prompt text',
+            ':lbl-test1 /generatortype?param1=value_test.1 Prompt text',
             'lbl-test1',
-            'toolname',
-            {'param1': 'value_test1'},
+            'generatortype',
+            {'param1': 'value_test.1'},
             'Prompt text'
         ),
         (
-            ':lbl-test1 /toolname?param1=value_test1&param2=value-test2 Prompt text',
+            ':lbl-test1 /generatortype?param1=value_test.1&param2=value-test2 Prompt text',
             'lbl-test1',
-            'toolname',
-            {'param1': 'value_test1', 'param2': 'value-test2'},
+            'generatortype',
+            {'param1': 'value_test.1', 'param2': 'value-test2'},
             'Prompt text'
         )
     ]
@@ -110,14 +110,14 @@ from core.prompting.base import Prompt
 def test_prompt_processing(
         prompt,
         label,
-        tool_name,
-        tool_parameters,
+        generator_type,
+        generator_parameters,
         actual_prompt):
     prompt_processor = Prompt(prompt)
 
     assert prompt_processor.get_original_prompt() == prompt
     assert str(prompt_processor) == prompt
     assert prompt_processor.get_label() == label
-    assert prompt_processor.get_tool_name() == tool_name
+    assert prompt_processor.get_generator_type() == generator_type
     assert prompt_processor.get_prompt() == actual_prompt
-    assert prompt_processor.get_tool_parameters() == tool_parameters
+    assert prompt_processor.get_generator_parameters() == generator_parameters
