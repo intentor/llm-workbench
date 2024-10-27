@@ -2,7 +2,7 @@
 
 import pytest
 
-from core.prompting.prompt import Prompt
+from core.prompting.base import Prompt
 
 
 @pytest.mark.parametrize(

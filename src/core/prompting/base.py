@@ -1,6 +1,9 @@
 """Prompt structure module."""
 
+from abc import abstractmethod
 import re
+
+from attr import dataclass
 
 DEFAULT_PROMPT_PART_RETURN = ''
 
@@ -55,3 +58,33 @@ class Prompt():
                 parameters[key] = value
 
         return parameters
+
+
+@dataclass
+class GeneratedResponse():
+    """Defines a generated response."""
+
+    value: str
+    """Response generated."""
+
+    input_tokens: int = 0
+    """Total number of input tokens. Can be 0 in case no model was used."""
+
+    output_tokens: int = 0
+    """Total number of output tokens. Can be 0 in case no model was used."""
+
+
+class ResponseGenerator():
+    """Generate responses based on a prompt."""
+
+    @abstractmethod
+    def generate(self, prompt: Prompt) -> GeneratedResponse:
+        """Generates a respons based on a prompt.
+
+        Args:
+            - prompt: Prompt to generate a response.
+
+        Returns:
+            Response from the generation.
+        """
+        raise NotImplementedError()
