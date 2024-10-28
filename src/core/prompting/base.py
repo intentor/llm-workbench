@@ -6,7 +6,7 @@ import re
 from attr import dataclass
 
 DEFAULT_PROMPT_PART_RETURN = ''
-DEFULT_GENERATOR_TYPE = 'gateway'
+DEFULT_GENERATOR_TYPE = 'model'
 
 
 class Prompt():
@@ -85,7 +85,23 @@ class ResponseGenerator():
 
     @abstractmethod
     def generate(self, prompt: Prompt) -> GeneratedResponse:
-        """Generates a respons based on a prompt.
+        """Generates a response based on a prompt.
+
+        Args:
+            - prompt: Prompt to generate a response.
+
+        Returns:
+            Response from the generation.
+        """
+        raise NotImplementedError()
+
+
+class ModelProvider():
+    """Provides model prompt execution for response generation."""
+
+    @abstractmethod
+    def generate(self, prompt: str) -> GeneratedResponse:
+        """Generates a response based on a prompt.
 
         Args:
             - prompt: Prompt to generate a response.

@@ -4,14 +4,14 @@ from logging import getLogger
 
 from core.prompting.base import GeneratedResponse, Prompt
 from core.prompting.generator.context import ContextResponseGenerator
-from core.prompting.generator.ollama import OllamaResponseGenerator
+from core.prompting.generator.model import ModelResponseGenerator
 from core.prompting.history import HistoryAwareResponseGeneator, PromptHistory
 
 logger = getLogger()
 
 
 class RagResponseGenerator(HistoryAwareResponseGeneator):
-    """Generate responses querying the context and passing it to a LLM.
+    """Generate responses querying the context and passing it to a model.
 
     This is a shortcut generator which operates other generators, so no 
     history for /rag is created.
@@ -20,7 +20,7 @@ class RagResponseGenerator(HistoryAwareResponseGeneator):
     def __init__(
         self,
             history: PromptHistory,
-            ollama_generator: OllamaResponseGenerator,
+            model_generator: ModelResponseGenerator,
             context_generator: ContextResponseGenerator
     ):
         """
@@ -30,7 +30,7 @@ class RagResponseGenerator(HistoryAwareResponseGeneator):
             - context_generator: Context generator.
         """
         super().__init__(history)
-        self._ollama_generator = ollama_generator
+        self._model_generator = model_generator
         self._context_generator = context_generator
 
     def get_type(self) -> str:
@@ -54,7 +54,7 @@ Query: {prompt_text}
 Answer:
 """
 
-        generated_response = self._ollama_generator.generate(
+        generated_response = self._model_generator.generate(
             Prompt(gateway_query)
         )
 

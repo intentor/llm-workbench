@@ -10,15 +10,16 @@ import ollama
 
 from config import get_settings
 from core.prompting.base import PromptExecutor
+from core.prompting.generator.model import ModelResponseGenerator
 from core.prompting.indexer import ContextIndexer
 from core.prompting.generator.context import ContextResponseGenerator
 from core.prompting.generator.echo import EchoResponseGenerator
 from core.prompting.generator.endpoint import EndpointResponseGenerator
-from core.prompting.generator.ollama import OllamaResponseGenerator
-from core.prompting.generator.openrouter import OpenRouterResponseGenerator
 from core.prompting.generator.rag import RagResponseGenerator
 from core.prompting.generator.template import TemplateResponseGenerator
 from core.prompting.history import PromptHistory
+from core.prompting.provider.ollama import OllamaModelProvider
+from core.prompting.provider.openrouter import OpenRouterModelProvider
 from ui.component.base import OperationMode, OperationModeManager, UiComponent
 from ui.component.chat import ChatComponent
 from ui.component.context import ContextCompoonent
@@ -38,45 +39,47 @@ if 'id' not in st.session_state:
     st.session_state.id = str(uuid.uuid4())
     st.session_state.history = PromptHistory()
 
-ollama = ollama.Client(
+ollama_client = ollama.Client(
     host=settings.ollama_host,
     timeout=settings.ollama_request_timeout
 )
 indexer = ContextIndexer(
-    ollama,
+    ollama_client,
     settings.vector_db_path,
     st.session_state.id,
     settings.model_embeddings
 )
-
-generator_ollama = OllamaResponseGenerator(
-    st.session_state.history,
-    ollama,
-    settings.ollama_model
-)
-generator_context = ContextResponseGenerator(
+context_generator = ContextResponseGenerator(
     st.session_state.history,
     indexer
 )
-if settings.model_gateway == 'OPENROUTER':
-    generator_gateway = OpenRouterResponseGenerator(
-        st.session_state.history,
+
+if settings.model_provider == 'OPENROUTER':
+    model_provider = OpenRouterModelProvider(
         settings.open_router_host,
         settings.open_router_key,
         settings.open_router_request_timeout,
         settings.open_router_model
     )
 else:
-    generator_gateway = generator_ollama
+    model_provider = OllamaModelProvider(
+        ollama_client,
+        settings.ollama_model
+    )
+
+model_generator = ModelResponseGenerator(
+    st.session_state.history,
+    model_provider
+)
 
 prompt_executor = PromptExecutor(
     [
-        generator_gateway,
-        generator_context,
+        model_generator,
+        context_generator,
         RagResponseGenerator(
             st.session_state.history,
-            generator_ollama,
-            generator_context
+            model_generator,
+            context_generator
         ),
         EndpointResponseGenerator(
             st.session_state.history

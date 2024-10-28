@@ -30,8 +30,8 @@ class Settings(BaseSettings):
     open_router_model: str = 'contextualized-assistant'
     """Name of the LLM model used by OpenRouter."""
 
-    model_gateway: str = 'OLLAMA'
-    """Gateway used for LLM generation (OLLAMA, OPENROUTER). Defaults to OLLAMA."""
+    model_provider: str = 'OLLAMA'
+    """Provider used for LLM generation (OLLAMA, OPENROUTER). Defaults to OLLAMA."""
 
     model_embeddings: str = 'mxbai-embed-large'
     """Name of the embedding model used by the application."""

@@ -1,12 +1,11 @@
-"""Ollama generation module."""
+"""Model generation module."""
 
 from logging import getLogger
-
-from ollama import Client
 
 from core.prompting.base import (
     DEFULT_GENERATOR_TYPE,
     GeneratedResponse,
+    ModelProvider,
     Prompt
 )
 from core.prompting.history import HistoryAwareResponseGeneator, PromptHistory
@@ -14,41 +13,31 @@ from core.prompting.history import HistoryAwareResponseGeneator, PromptHistory
 logger = getLogger()
 
 
-class OllamaResponseGenerator(HistoryAwareResponseGeneator):
+class ModelResponseGenerator(HistoryAwareResponseGeneator):
     """Generate responses from an LLM using Ollama."""
 
     def __init__(
         self,
             history: PromptHistory,
-            ollama: Client,
-            model_name: str = 'llama3'
+            provider: ModelProvider
     ):
         """
         Args:
             - history: Prompt history manager.
-            - ollama: Client to access Ollama.
-            - model_name: Name of the LLM model used for generation.
+            - provider: Provider for generating responses from a model.
         """
         super().__init__(history)
-        self._ollama = ollama
-        self._model_name = model_name
+        self._provider = provider
 
     def get_type(self) -> str:
         return DEFULT_GENERATOR_TYPE
 
     def generate(self, prompt: Prompt) -> GeneratedResponse:
         prompt_text = self._replacer.replace(prompt.get_prompt())
-        ollama_response = self._ollama.generate(self._model_name, prompt_text)
-        response = ollama_response['response']
-
-        generated_response = GeneratedResponse(
-            value=response,
-            input_tokens=ollama_response['prompt_eval_count'],
-            output_tokens=ollama_response['eval_count']
-        )
+        generated_response = self._provider.generate(prompt_text)
         self._append_history(prompt, generated_response)
 
-        logger.debug('m=generate type=ollama prompt=%s response=%s',
+        logger.debug('m=generate type=model prompt=%s response=%s',
                      prompt_text, generated_response)
 
         return generated_response
