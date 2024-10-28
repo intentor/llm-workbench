@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     model_gateway: str = 'OLLAMA'
     """Gateway used for LLM generation (OLLAMA, OPENROUTER). Defaults to OLLAMA."""
 
-    model_embeddings: str = 'nomic-embed-text'
+    model_embeddings: str = 'mxbai-embed-large'
     """Name of the embedding model used by the application."""
 
     vector_db_path: str = './.data/vdb'
