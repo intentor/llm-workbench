@@ -44,12 +44,12 @@ class RagResponseGenerator(HistoryAwareResponseGeneator):
             Prompt(context_query)
         )
 
-        gateway_query = f"""Context information is below
+        gateway_query = f"""Context information is below:
 ---------------------
 {context_response.value}
 ---------------------
 
-Given the context information and not prior knowledge, answer the query.
+Given the context information and no prior knowledge, answer the query.
 Query: {prompt_text}
 Answer:
 """
