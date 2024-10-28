@@ -8,18 +8,7 @@ from logging import getLogger
 import streamlit as st
 import ollama
 
-from config import (
-    LOG_FORMAT,
-    MODEL_EMBEDDINGS,
-    MODEL_GATEWAY,
-    MODEL_LLM,
-    OLLAMA_HOST,
-    OLLAMA_REQUEST_TIMEOUT,
-    OPEN_ROUTER_HOST,
-    OPEN_ROUTER_KEY,
-    OPEN_ROUTER_REQUEST_TIMEOUT,
-    VECTOR_DB_PATH
-)
+from config import get_settings
 from core.prompting.base import PromptExecutor
 from core.prompting.indexer import ContextIndexer
 from core.prompting.generator.context import ContextResponseGenerator
@@ -36,6 +25,7 @@ from ui.component.context import ContextCompoonent
 from ui.component.replay import ReplayComponent
 
 logger = getLogger()
+settings = get_settings()
 
 # Initial setup.
 if 'id' not in st.session_state:
@@ -43,38 +33,38 @@ if 'id' not in st.session_state:
         logger.setLevel(logging.DEBUG)
         ch = logging.StreamHandler()
         ch.setLevel(logging.DEBUG)
-        ch.setFormatter(logging.Formatter(LOG_FORMAT))
+        ch.setFormatter(logging.Formatter(settings.log_format))
         logger.addHandler(ch)
     st.session_state.id = str(uuid.uuid4())
     st.session_state.history = PromptHistory()
 
 ollama = ollama.Client(
-    host=OLLAMA_HOST,
-    timeout=OLLAMA_REQUEST_TIMEOUT
+    host=settings.ollama_host,
+    timeout=settings.ollama_request_timeout
 )
 indexer = ContextIndexer(
     ollama,
-    VECTOR_DB_PATH,
+    settings.vector_db_path,
     st.session_state.id,
-    MODEL_EMBEDDINGS
+    settings.model_embeddings
 )
 
 generator_ollama = OllamaResponseGenerator(
     st.session_state.history,
     ollama,
-    MODEL_LLM
+    settings.ollama_model
 )
 generator_context = ContextResponseGenerator(
     st.session_state.history,
     indexer
 )
-if MODEL_GATEWAY == 'OPENROUTER':
+if settings.model_gateway == 'OPENROUTER':
     generator_gateway = OpenRouterResponseGenerator(
         st.session_state.history,
-        OPEN_ROUTER_HOST,
-        OPEN_ROUTER_KEY,
-        OPEN_ROUTER_REQUEST_TIMEOUT,
-        MODEL_LLM
+        settings.open_router_host,
+        settings.open_router_key,
+        settings.open_router_request_timeout,
+        settings.open_router_model
     )
 else:
     generator_gateway = generator_ollama

@@ -1,39 +1,50 @@
 """Application settings.
 """
 
-import os
+from functools import lru_cache
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
-LOG_FORMAT: str = os.getenv(
-    'LOG_FORMAT', '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-"""Format for the logs displayed by the application."""
 
-OLLAMA_HOST: str = os.getenv('OLLAMA_HOST', 'http://localhost:11434')
-"""Host of the Ollama server."""
+class Settings(BaseSettings):
+    log_format: str = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    """Format for the logs displayed by the application."""
 
-OLLAMA_REQUEST_TIMEOUT: int = int(os.getenv('OLLAMA_TIMEOUT', '600'))
-"""Request timeout to the Ollama server, in seconds."""
+    ollama_host: str = 'http://localhost:11434'
+    """Host of the Ollama server."""
 
-OPEN_ROUTER_HOST: str = os.getenv(
-    'OPEN_ROUTER_HOST', 'https://openrouter.ai/api/v1/chat/completions')
-"""Host of the OpenRouter API."""
+    ollama_request_timeout: int = 600
+    """Request timeout to the Ollama server, in seconds."""
 
-OPEN_ROUTER_KEY: str = os.getenv('OPEN_ROUTER_KEY', '<Replace with your key>')
+    ollama_model: str = 'contextualized-assistant'
+    """Name of the LLM model used by Ollama."""
 
-OPEN_ROUTER_REQUEST_TIMEOUT: int = int(
-    os.getenv('OPEN_ROUTER_TIMEOUT', '60000'))
-"""Request timeout to the OpenRouter server, in miliseconds."""
+    open_router_host: str = 'https://openrouter.ai/api/v1/chat/completions'
+    """Host of the OpenRouter API."""
 
-MODEL_GATEWAY: str = os.getenv('MODEL_GATEWAY', 'OLLAMA')
-"""Gateway used for LLM generation (OLLAMA, OPENROUTER). Defaults to OLLAMA."""
+    open_router_key: str
+    """App key of the OpenRouter API."""
 
-MODEL_EMBEDDINGS: str = os.getenv('MODEL_EMBEDDINGS', 'nomic-embed-text')
-"""Name of the embedding model used by the application."""
+    open_router_request_timeout: int = 60000
+    """Request timeout to the OpenRouter server, in miliseconds."""
 
-MODEL_LLM: str = os.getenv('MODEL_LLM', 'contextualized-assistant')
-"""Name of the LLM model used by the application."""
+    open_router_model: str = 'contextualized-assistant'
+    """Name of the LLM model used by OpenRouter."""
 
-VECTOR_DB_PATH: str = os.getenv('VECTOR_DB_PATH', './.data/vdb')
-"""Path where the embeddings data will be saved."""
+    model_gateway: str = 'OLLAMA'
+    """Gateway used for LLM generation (OLLAMA, OPENROUTER). Defaults to OLLAMA."""
 
-SESSION_PATH: str = os.getenv('SESSION_PATH', './.data/session')
-"""Directory where session files are stored."""
+    model_embeddings: str = 'nomic-embed-text'
+    """Name of the embedding model used by the application."""
+
+    vector_db_path: str = './.data/vdb'
+    """Path where the embeddings data will be saved."""
+
+    session_path: str = './.data/session'
+    """Directory where session files are stored."""
+
+    model_config = SettingsConfigDict(env_file='.env')
+
+
+@lru_cache
+def get_settings() -> Settings:
+    return Settings()

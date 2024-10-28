@@ -22,6 +22,8 @@ In order to configure the model and the application, in a new terminal, run:
 make setup
 ```
 
+You can copy [`sample.env`](./sample.env) as `.env` in the app root to customize application settings.
+
 ## Running the app
 
 ```bash

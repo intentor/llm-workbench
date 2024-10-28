@@ -12,12 +12,13 @@ from logging import getLogger
 import streamlit as st
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 
-from config import SESSION_PATH
+from config import get_settings
 from core.prompting.indexer import ContextIndexer
 from ui.component.base import OperationModeManager, UiComponent
 import ui.component.icon as icon
 
 logger = getLogger()
+settings = get_settings()
 
 
 class ContextCompoonent(UiComponent):
@@ -94,7 +95,8 @@ class ContextCompoonent(UiComponent):
             files: list[UploadedFile]
     ) -> list[str]:
         files_info: list[str] = []
-        session_dir = os.path.join(SESSION_PATH, st.session_state.id, 'files')
+        session_dir = os.path.join(
+            settings.session_path, st.session_state.id, 'files')
         os.makedirs(session_dir, exist_ok=True)
         for file_to_save in files:
             file_path = os.path.join(session_dir, file_to_save.name)

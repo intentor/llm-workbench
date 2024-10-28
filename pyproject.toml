@@ -8,6 +8,7 @@ readme = "README.md"
 classifiers = ["Programming Language :: Python :: 3.12"]
 dependencies = [
     "streamlit",
+    "pydantic-settings",
     "ollama",
     "chromadb",
     "llama-index",
