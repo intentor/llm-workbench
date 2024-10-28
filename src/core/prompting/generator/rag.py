@@ -1,13 +1,9 @@
 """RAG generation module."""
 
-from logging import getLogger
-
 from core.prompting.base import GeneratedResponse, Prompt
 from core.prompting.generator.context import ContextResponseGenerator
 from core.prompting.generator.model import ModelResponseGenerator
 from core.prompting.history import HistoryAwareResponseGeneator, PromptHistory
-
-logger = getLogger()
 
 
 class RagResponseGenerator(HistoryAwareResponseGeneator):
@@ -57,8 +53,5 @@ Answer:
         generated_response = self._model_generator.generate(
             Prompt(gateway_query)
         )
-
-        logger.debug('m=generate type=rag prompt=%s response=%s',
-                     prompt_text, generated_response)
 
         return generated_response

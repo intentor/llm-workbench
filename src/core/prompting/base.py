@@ -1,9 +1,12 @@
 """Prompt structure module."""
 
 from abc import abstractmethod
+from logging import getLogger
 import re
 
 from attr import dataclass
+
+logger = getLogger()
 
 DEFAULT_PROMPT_PART_RETURN = ''
 DEFULT_GENERATOR_TYPE = 'model'
@@ -142,7 +145,17 @@ class PromptExecutor():
         generator_type = prompt_structure.get_generator_type()
 
         if generator_type in self._generators:
-            return self._generators[generator_type].generate(prompt_structure)
+            generated_response = self._generators[generator_type].generate(
+                prompt_structure)
+
+            logger.debug(
+                'm=generate type=%s params=%s prompt=%s response=%s',
+                generator_type,
+                prompt_structure.get_generator_parameters(),
+                prompt,
+                generated_response)
+
+            return generated_response
         else:
             raise ValueError(
                 f"Generator not available for type name {generator_type}.")

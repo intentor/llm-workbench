@@ -1,11 +1,7 @@
 """Echo generation module."""
 
-from logging import getLogger
-
 from core.prompting.base import GeneratedResponse, Prompt
 from core.prompting.history import HistoryAwareResponseGeneator
-
-logger = getLogger()
 
 
 class EchoResponseGenerator(HistoryAwareResponseGeneator):
@@ -21,7 +17,5 @@ class EchoResponseGenerator(HistoryAwareResponseGeneator):
             value=response
         )
         self._append_history(prompt, generated_response)
-
-        logger.debug('m=generate type=echo response=%s', generated_response)
 
         return generated_response

@@ -1,12 +1,8 @@
 """Context generation module."""
 
-from logging import getLogger
-
 from core.prompting.base import GeneratedResponse, Prompt
 from core.prompting.history import HistoryAwareResponseGeneator, PromptHistory
 from core.prompting.indexer import ContextIndexer
-
-logger = getLogger()
 
 PARAM_TOP_K = 'top-k'
 PARAM_FILE_NAME = 'file'
@@ -48,8 +44,5 @@ class ContextResponseGenerator(HistoryAwareResponseGeneator):
             value=response
         )
         self._append_history(prompt, generated_response)
-
-        logger.debug('m=generate type=context params=%s prompt=%s response=%s',
-                     params, prompt_text, generated_response)
 
         return generated_response

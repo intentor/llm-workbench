@@ -39,7 +39,4 @@ class TemplateResponseGenerator(HistoryAwareResponseGeneator):
         )
         self._append_history(prompt, generated_response)
 
-        logger.debug('m=generate type=template response=%s',
-                     generated_response)
-
         return generated_response

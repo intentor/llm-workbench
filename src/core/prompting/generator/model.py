@@ -1,7 +1,5 @@
 """Model generation module."""
 
-from logging import getLogger
-
 from core.prompting.base import (
     DEFULT_GENERATOR_TYPE,
     GeneratedResponse,
@@ -9,8 +7,6 @@ from core.prompting.base import (
     Prompt
 )
 from core.prompting.history import HistoryAwareResponseGeneator, PromptHistory
-
-logger = getLogger()
 
 
 class ModelResponseGenerator(HistoryAwareResponseGeneator):
@@ -36,8 +32,5 @@ class ModelResponseGenerator(HistoryAwareResponseGeneator):
         prompt_text = self._replacer.replace(prompt.get_prompt())
         generated_response = self._provider.generate(prompt_text)
         self._append_history(prompt, generated_response)
-
-        logger.debug('m=generate type=model prompt=%s response=%s',
-                     prompt_text, generated_response)
 
         return generated_response
