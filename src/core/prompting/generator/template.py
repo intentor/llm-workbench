@@ -5,20 +5,30 @@ import json
 
 import jinja2
 
-from core.prompting.base import GeneratedResponse, Prompt
-from core.prompting.history import HistoryAwareResponseGeneator
+from core.prompting.base import GeneratedResponse, Prompt, ResponseGenerator
+from core.prompting.history import PromptHistory
 
 logger = getLogger()
 
 
-class TemplateResponseGenerator(HistoryAwareResponseGeneator):
+class TemplateResponseGenerator(ResponseGenerator):
     """Apply the last response as JSON in a template defined by the prompt.."""
+
+    def __init__(
+        self,
+        history: PromptHistory,
+    ):
+        """
+        Args:
+            - history: Prompt history manager.
+        """
+        self._history = history
 
     def get_type(self) -> str:
         return 'template'
 
     def generate(self, prompt: Prompt) -> GeneratedResponse:
-        template_format = self._replacer.replace(prompt.get_prompt())
+        template_format = prompt.get_prompt()
 
         try:
             last_response = self._history.get_last_response()
@@ -34,9 +44,6 @@ class TemplateResponseGenerator(HistoryAwareResponseGeneator):
             response = ('Could not apply the last response to the template. '
                         'Please check the previous response and try again.')
 
-        generated_response = GeneratedResponse(
+        return GeneratedResponse(
             value=response
         )
-        self._append_history(prompt, generated_response)
-
-        return generated_response

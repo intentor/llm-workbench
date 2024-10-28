@@ -1,11 +1,10 @@
 """Prompt history module."""
 
-from abc import abstractmethod
 import re
 
 from attr import dataclass
 
-from core.prompting.base import GeneratedResponse, Prompt, ResponseGenerator
+from core.prompting.base import GeneratedResponse
 
 HISTORY_ITEM_SEPARATOR = '\n\n'
 
@@ -96,27 +95,3 @@ class PromptHistoryReplacer():
             return '\n'.join(entries)
         else:
             return ''
-
-
-class HistoryAwareResponseGeneator(ResponseGenerator):
-    """Generate responses based on a prompt, with access to prompt history and 
-    prompt pattern replacement."""
-
-    def __init__(self, history: PromptHistory):
-        """
-        Args:
-            - history: Prompt history manager.
-        """
-        self._history = history
-        self._replacer = PromptHistoryReplacer(history)
-
-    @abstractmethod
-    def generate(self, prompt: Prompt) -> GeneratedResponse:
-        raise NotImplementedError()
-
-    def _append_history(self, prompt: Prompt, response: GeneratedResponse):
-        self._history.append(PromptHistoryEntry(
-            label=prompt.get_label(),
-            prompt=prompt.get_original_prompt(),
-            response=response
-        ))

@@ -1,12 +1,11 @@
 """RAG generation module."""
 
-from core.prompting.base import GeneratedResponse, Prompt
+from core.prompting.base import GeneratedResponse, Prompt, ResponseGenerator
 from core.prompting.generator.context import ContextResponseGenerator
 from core.prompting.generator.model import ModelResponseGenerator
-from core.prompting.history import HistoryAwareResponseGeneator, PromptHistory
 
 
-class RagResponseGenerator(HistoryAwareResponseGeneator):
+class RagResponseGenerator(ResponseGenerator):
     """Generate responses querying the context and passing it to a model.
 
     This is a shortcut generator which operates other generators, so no 
@@ -15,17 +14,14 @@ class RagResponseGenerator(HistoryAwareResponseGeneator):
 
     def __init__(
         self,
-            history: PromptHistory,
             model_generator: ModelResponseGenerator,
             context_generator: ContextResponseGenerator
     ):
         """
         Args:
-            - history: Prompt history manager.
             - ollama_generator: Ollama generator.
             - context_generator: Context generator.
         """
-        super().__init__(history)
         self._model_generator = model_generator
         self._context_generator = context_generator
 
@@ -33,25 +29,21 @@ class RagResponseGenerator(HistoryAwareResponseGeneator):
         return 'rag'
 
     def generate(self, prompt: Prompt) -> GeneratedResponse:
-        prompt_text = self._replacer.replace(prompt.get_prompt())
-
         context_query = '/context ' + prompt.get_prompt()
         context_response = self._context_generator.generate(
             Prompt(context_query)
         )
 
-        gateway_query = f"""Context information is below:
+        rag_prompt = f"""Context information is below:
 ---------------------
 {context_response.value}
 ---------------------
 
 Given the context information and no prior knowledge, answer the query.
-Query: {prompt_text}
+Query: {prompt.get_prompt()}
 Answer:
 """
 
-        generated_response = self._model_generator.generate(
-            Prompt(gateway_query)
+        return self._model_generator.generate(
+            Prompt(rag_prompt)
         )
-
-        return generated_response

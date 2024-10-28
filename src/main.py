@@ -9,7 +9,7 @@ import streamlit as st
 import ollama
 
 from config import get_settings
-from core.prompting.base import PromptExecutor
+from core.prompting.executor import PromptExecutor
 from core.prompting.generator.model import ModelResponseGenerator
 from core.prompting.indexer import ContextIndexer
 from core.prompting.generator.context import ContextResponseGenerator
@@ -49,10 +49,7 @@ indexer = ContextIndexer(
     st.session_state.id,
     settings.model_embeddings
 )
-context_generator = ContextResponseGenerator(
-    st.session_state.history,
-    indexer
-)
+context_generator = ContextResponseGenerator(indexer)
 
 if settings.model_provider == 'OPENROUTER':
     model_provider = OpenRouterModelProvider(
@@ -67,29 +64,17 @@ else:
         settings.ollama_model
     )
 
-model_generator = ModelResponseGenerator(
-    st.session_state.history,
-    model_provider
-)
+model_generator = ModelResponseGenerator(model_provider)
 
 prompt_executor = PromptExecutor(
+    st.session_state.history,
     [
         model_generator,
         context_generator,
-        RagResponseGenerator(
-            st.session_state.history,
-            model_generator,
-            context_generator
-        ),
-        EndpointResponseGenerator(
-            st.session_state.history
-        ),
-        EchoResponseGenerator(
-            st.session_state.history
-        ),
-        TemplateResponseGenerator(
-            st.session_state.history
-        )
+        RagResponseGenerator(model_generator, context_generator),
+        EndpointResponseGenerator(),
+        EchoResponseGenerator(),
+        TemplateResponseGenerator(st.session_state.history)
     ]
 )
 

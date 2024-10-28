@@ -2,13 +2,12 @@
 
 import requests
 
-from core.prompting.base import GeneratedResponse, Prompt
-from core.prompting.history import HistoryAwareResponseGeneator
+from core.prompting.base import GeneratedResponse, Prompt, ResponseGenerator
 
 PARAM_URL = 'url'
 
 
-class EndpointResponseGenerator(HistoryAwareResponseGeneator):
+class EndpointResponseGenerator(ResponseGenerator):
     """Generate responses from endpoints."""
 
     def get_type(self) -> str:
@@ -23,9 +22,6 @@ class EndpointResponseGenerator(HistoryAwareResponseGeneator):
         response = requests.get(url, timeout=60)
         contents = response.text
 
-        generated_response = GeneratedResponse(
+        return GeneratedResponse(
             value=contents
         )
-        self._append_history(prompt, generated_response)
-
-        return generated_response
