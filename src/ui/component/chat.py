@@ -11,7 +11,7 @@ from timeit import default_timer as timer
 
 import streamlit as st
 
-from core.prompting.base import ResponseGenerator
+from core.prompting.base import PromptExecutor
 from core.prompting.history import Prompt, PromptHistory
 from ui.component.base import OperationModeManager, UiComponent
 
@@ -34,10 +34,10 @@ class ChatComponent(UiComponent):
     def __init__(
             self,
             mode_manager: OperationModeManager,
-            generator: ResponseGenerator,
+            prompt_executor: PromptExecutor,
             history: PromptHistory):
         super().__init__(mode_manager)
-        self._generator = generator
+        self._prompt_executor = prompt_executor
         self._history = history
         if 'replay' not in st.session_state:
             self._reset_replay()
@@ -115,5 +115,5 @@ class ChatComponent(UiComponent):
         self._render_message(ROLE_USER, prompt)
 
         with st.spinner("Thinking..."):
-            response = self._generator.generate(Prompt(prompt))
+            response = self._prompt_executor.execute(prompt)
             self._render_message(ROLE_BOT, response.value)

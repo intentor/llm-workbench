@@ -96,6 +96,42 @@ class ResponseGenerator():
         raise NotImplementedError()
 
 
+class PromptExecutor():
+    """Executes a prompt considering any avaliable generators."""
+
+    def __init__(
+        self,
+        generators: list[ResponseGenerator]
+    ):
+        """
+        Args:
+            - generators: Generators available for prompt execution.
+        """
+        generators_per_type: dict[str, ResponseGenerator] = {}
+        for generator in generators:
+            generators_per_type[generator.get_type()] = generator
+
+        self._generators = generators_per_type
+
+    def execute(self, prompt: str) -> GeneratedResponse:
+        """Executes a prompt.
+
+        Args:
+            - Prompt to be executed.
+
+        Returns:
+            Generated response from the prompt execution.
+        """
+        prompt_structure = Prompt(prompt)
+        generator_type = prompt_structure.get_generator_type()
+
+        if generator_type in self._generators:
+            return self._generators[generator_type].generate(prompt_structure)
+        else:
+            raise ValueError(
+                f"Generator not available for type name {generator_type}.")
+
+
 class GenerationError(Exception):
     def __init__(self, message: str = 'Error when performing generation.'):
         super().__init__(message)

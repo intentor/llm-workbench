@@ -20,6 +20,7 @@ from config import (
     OPEN_ROUTER_REQUEST_TIMEOUT,
     VECTOR_DB_PATH
 )
+from core.prompting.base import PromptExecutor
 from core.prompting.indexer import ContextIndexer
 from core.prompting.generator.context import ContextResponseGenerator
 from core.prompting.generator.echo import EchoResponseGenerator
@@ -27,7 +28,6 @@ from core.prompting.generator.endpoint import EndpointResponseGenerator
 from core.prompting.generator.ollama import OllamaResponseGenerator
 from core.prompting.generator.openrouter import OpenRouterResponseGenerator
 from core.prompting.generator.rag import RagResponseGenerator
-from core.prompting.generator.selector import SelectorResponseGenerator
 from core.prompting.generator.template import TemplateResponseGenerator
 from core.prompting.history import PromptHistory
 from ui.component.base import OperationMode, OperationModeManager, UiComponent
@@ -79,7 +79,7 @@ if MODEL_GATEWAY == 'OPENROUTER':
 else:
     generator_gateway = generator_ollama
 
-generator = SelectorResponseGenerator(
+prompt_executor = PromptExecutor(
     [
         generator_gateway,
         generator_context,
@@ -103,7 +103,7 @@ generator = SelectorResponseGenerator(
 mode_manager = OperationModeManager(OperationMode.CHAT)
 chat = ChatComponent(
     mode_manager,
-    generator,
+    prompt_executor,
     st.session_state.history
 )
 context = ContextCompoonent(

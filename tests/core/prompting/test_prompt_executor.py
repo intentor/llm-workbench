@@ -3,25 +3,24 @@
 from unittest.mock import patch
 import pytest
 
-from core.prompting.generator.selector import SelectorResponseGenerator
-from core.prompting.base import Prompt
+from core.prompting.base import PromptExecutor
 
 PROMPT_TEXT: str = 'Prompt text'
 
 
 @pytest.fixture
-def prompt_gateway() -> Prompt:
-    return Prompt(PROMPT_TEXT)
+def prompt_gateway() -> str:
+    return PROMPT_TEXT
 
 
 @pytest.fixture
-def prompt_context() -> Prompt:
-    return Prompt('/context ' + PROMPT_TEXT)
+def prompt_context() -> str:
+    return '/context ' + PROMPT_TEXT
 
 
 @pytest.fixture
-def prompt_endpoint() -> Prompt:
-    return Prompt('/endpoint?url=http://localhost:3000/data/1')
+def prompt_endpoint() -> str:
+    return '/endpoint http://localhost:3000/data/1'
 
 
 @pytest.fixture
@@ -61,29 +60,29 @@ def generators(generator_gateway, generator_context, generator_endpoint):
 
 
 def test_no_generators(prompt_gateway):
-    selector_generator = SelectorResponseGenerator({})
+    selector_generator = PromptExecutor({})
 
     with pytest.raises(ValueError):
-        selector_generator.generate(prompt_gateway)
+        selector_generator.execute(prompt_gateway)
 
 
 def test_unavailable_generator(
         generator_context,
         prompt_gateway
 ):
-    selector_generator = SelectorResponseGenerator([generator_context])
+    selector_generator = PromptExecutor([generator_context])
 
     with pytest.raises(ValueError):
-        selector_generator.generate(prompt_gateway)
+        selector_generator.execute(prompt_gateway)
 
 
 def test_generator_gateway(
         generators,
         prompt_gateway
 ):
-    selector_generator = SelectorResponseGenerator(generators)
+    selector_generator = PromptExecutor(generators)
 
-    response = selector_generator.generate(prompt_gateway)
+    response = selector_generator.execute(prompt_gateway)
 
     assert response == 'gateway'
 
@@ -92,9 +91,9 @@ def test_generator_context(
         generators,
         prompt_context
 ):
-    selector_generator = SelectorResponseGenerator(generators)
+    selector_generator = PromptExecutor(generators)
 
-    response = selector_generator.generate(prompt_context)
+    response = selector_generator.execute(prompt_context)
 
     assert response == 'context'
 
@@ -103,8 +102,8 @@ def test_generator_endpoint(
         generators,
         prompt_endpoint
 ):
-    selector_generator = SelectorResponseGenerator(generators)
+    selector_generator = PromptExecutor(generators)
 
-    response = selector_generator.generate(prompt_endpoint)
+    response = selector_generator.execute(prompt_endpoint)
 
     assert response == 'endpoint'
